@@ -17,23 +17,27 @@ get_header(); ?>
             ?>
                 <!-- Already Logged In State -->
                 <div class="auth-logged-in-state">
-                    <div class="auth-avatar-icon">👋</div>
+                    <div class="auth-avatar-icon" aria-hidden="true">
+                        <span class="auth-user-avatar-badge">
+                            <?php echo get_avatar( $current_user->ID, 48 ); ?>
+                        </span>
+                    </div>
                     <h2 class="auth-user-greeting">
                         <?php 
                         /* translators: %s: user display name */
-                        printf( esc_html__( 'Welcome, %s', 'digital-marketplace' ), esc_html( $current_user->display_name ) ); 
+                        printf( esc_html__( 'Welcome back, %s', 'digital-marketplace' ), esc_html( $current_user->display_name ) ); 
                         ?>
                     </h2>
                     <p class="auth-user-email">
                         <?php echo esc_html( $current_user->user_email ); ?>
                     </p>
                     <p class="auth-session-info">
-                        <?php esc_html_e( 'You are signed into your verified customer account.', 'digital-marketplace' ); ?>
+                        <?php esc_html_e( 'You are authenticated with verified customer license access.', 'digital-marketplace' ); ?>
                     </p>
 
                     <div class="auth-action-buttons">
-                        <a href="<?php echo esc_url( home_url( '/account' ) ); ?>" class="btn btn-primary btn-block">
-                            <?php esc_html_e( 'Go to My Dashboard & Downloads →', 'digital-marketplace' ); ?>
+                        <a href="<?php echo esc_url( home_url( '/account' ) ); ?>" class="btn btn-primary btn-block btn-lg">
+                            <?php esc_html_e( 'Go to My Dashboard & Licenses →', 'digital-marketplace' ); ?>
                         </a>
                         <a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="btn btn-secondary btn-block">
                             <?php esc_html_e( 'Sign Out', 'digital-marketplace' ); ?>
@@ -45,14 +49,14 @@ get_header(); ?>
                 <!-- Sign In Form using WordPress Core wp_login_form() -->
                 <div class="auth-header">
                     <div class="auth-badge">
-                        <span class="auth-badge-icon">✨</span>
-                        <span class="auth-badge-text"><?php esc_html_e( 'Creator & Developer Portal', 'digital-marketplace' ); ?></span>
+                        <span class="auth-badge-dot"></span>
+                        <span class="auth-badge-text"><?php esc_html_e( 'Verified Customer Portal', 'digital-marketplace' ); ?></span>
                     </div>
                     <h1 class="auth-title">
                         <?php esc_html_e( 'Sign in to Marketplace', 'digital-marketplace' ); ?>
                     </h1>
                     <p class="auth-subtitle">
-                        <?php esc_html_e( 'Access your purchased assets, licenses, and invoice history.', 'digital-marketplace' ); ?>
+                        <?php esc_html_e( 'Access your acquired design systems, code boilerplates, and private download links.', 'digital-marketplace' ); ?>
                     </p>
                 </div>
 
@@ -60,17 +64,33 @@ get_header(); ?>
                 // Display error message if WP login redirected with login error
                 if ( isset( $_GET['login'] ) && 'failed' === $_GET['login'] ) : ?>
                     <div class="auth-alert auth-alert-danger" role="alert">
-                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span>
                         <span><?php esc_html_e( 'Invalid username or password. Please verify your credentials and try again.', 'digital-marketplace' ); ?></span>
                     </div>
                 <?php elseif ( isset( $_GET['login'] ) && 'empty' === $_GET['login'] ) : ?>
                     <div class="auth-alert auth-alert-danger" role="alert">
-                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span>
                         <span><?php esc_html_e( 'Please enter both your username/email address and password to continue.', 'digital-marketplace' ); ?></span>
                     </div>
                 <?php elseif ( isset( $_GET['loggedout'] ) && 'true' === $_GET['loggedout'] ) : ?>
                     <div class="auth-alert auth-alert-success" role="status">
-                        <span class="alert-icon">✓</span>
+                        <span class="alert-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </span>
                         <span><?php esc_html_e( 'You have been securely signed out of your account.', 'digital-marketplace' ); ?></span>
                     </div>
                 <?php endif; ?>
@@ -103,11 +123,11 @@ get_header(); ?>
                 <div class="auth-footer-nav">
                     <?php if ( get_option( 'users_can_register' ) ) : ?>
                         <a href="<?php echo esc_url( wp_registration_url() ); ?>" class="auth-create-account-link">
-                            <?php esc_html_e( 'Create an Account', 'digital-marketplace' ); ?>
+                            <?php esc_html_e( 'Create New Account', 'digital-marketplace' ); ?>
                         </a>
                     <?php else : ?>
                         <span class="auth-signup-hint">
-                            <?php esc_html_e( 'New customer? Instant signup at checkout.', 'digital-marketplace' ); ?>
+                            <?php esc_html_e( 'New customer? Instant account generated at checkout.', 'digital-marketplace' ); ?>
                         </span>
                     <?php endif; ?>
 
@@ -118,10 +138,15 @@ get_header(); ?>
 
                 <!-- Trust Security Notice -->
                 <div class="auth-trust-notice">
-                    <span class="trust-shield-icon">🔒</span>
+                    <span class="trust-shield-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </span>
                     <div>
-                        <strong><?php esc_html_e( 'WordPress Core Authentication', 'digital-marketplace' ); ?></strong>
-                        <p><?php esc_html_e( 'Encrypted session tokens & nonces protect your account and digital license downloads.', 'digital-marketplace' ); ?></p>
+                        <strong><?php esc_html_e( 'Secure WordPress Authentication', 'digital-marketplace' ); ?></strong>
+                        <p><?php esc_html_e( 'Protected by cryptographic nonces and hashed session tokens.', 'digital-marketplace' ); ?></p>
                     </div>
                 </div>
 

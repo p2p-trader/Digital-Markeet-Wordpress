@@ -22,43 +22,61 @@
             
             <!-- Brand Logo -->
             <a id="brand-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" class="brand-logo">
-                <div class="brand-icon">✨</div>
-                <span><?php bloginfo( 'name' ); ?></span>
+                <span class="brand-icon-mark" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </span>
+                <span class="brand-text-wrap">
+                    <span class="brand-title"><?php bloginfo( 'name' ); ?></span>
+                    <span class="brand-tagline-pill"><?php esc_html_e( 'Asset Studio', 'digital-marketplace' ); ?></span>
+                </span>
             </a>
 
             <!-- Header Search Bar (Desktop) -->
             <form id="header-search-form" role="search" method="get" class="header-search" action="<?php echo esc_url( home_url( '/' ) ); ?>">
                 <div class="search-input-wrap">
-                    <span class="search-icon">🔍</span>
+                    <span class="search-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
                     <input 
                         id="nav-search-input"
                         type="search" 
                         name="s" 
-                        placeholder="<?php esc_attr_e( 'Search templates, UI kits, fonts, boilerplates...', 'digital-marketplace' ); ?>" 
+                        placeholder="<?php esc_attr_e( 'Search UI kits, design systems, boilerplates, icons...', 'digital-marketplace' ); ?>" 
                         value="<?php echo esc_attr( get_search_query() ); ?>"
                     />
                     <input type="hidden" name="post_type" value="product" />
+                    <span class="search-shortcut-hint" aria-hidden="true">⌘K</span>
                 </div>
             </form>
 
             <!-- Desktop Navigation -->
             <nav id="desktop-nav-links" class="desktop-nav" aria-label="<?php esc_attr_e( 'Primary Menu', 'digital-marketplace' ); ?>">
-                <a id="nav-link-products" href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ? get_post_type_archive_link( 'product' ) : home_url( '/products' ) ); ?>">
-                    <?php esc_html_e( 'Browse Products', 'digital-marketplace' ); ?>
+                <a id="nav-link-products" href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ? get_post_type_archive_link( 'product' ) : home_url( '/products' ) ); ?>" class="nav-item-link">
+                    <span><?php esc_html_e( 'Browse Catalog', 'digital-marketplace' ); ?></span>
                 </a>
 
                 <?php if ( is_user_logged_in() ) : 
                     $current_user = wp_get_current_user();
                     $account_page_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/account' );
                 ?>
-                    <a id="nav-link-account" href="<?php echo esc_url( $account_page_url ); ?>" class="nav-account-link">
-                        <span>👤 <?php echo esc_html( $current_user->display_name ); ?></span>
+                    <a id="nav-link-account" href="<?php echo esc_url( $account_page_url ); ?>" class="nav-account-link nav-item-link">
+                        <span class="user-nav-avatar-mini" aria-hidden="true">
+                            <?php echo get_avatar( $current_user->ID, 20 ); ?>
+                        </span>
+                        <span class="user-nav-name"><?php echo esc_html( $current_user->display_name ); ?></span>
                     </a>
                 <?php else : 
                     $login_url = home_url( '/login' );
                 ?>
-                    <a id="nav-link-login" href="<?php echo esc_url( $login_url ); ?>">
-                        <?php esc_html_e( 'Sign In', 'digital-marketplace' ); ?>
+                    <a id="nav-link-login" href="<?php echo esc_url( $login_url ); ?>" class="nav-item-link">
+                        <span><?php esc_html_e( 'Sign In', 'digital-marketplace' ); ?></span>
                     </a>
                 <?php endif; ?>
 
@@ -72,8 +90,15 @@
                         $cart_count = WC()->cart->get_cart_contents_count();
                     }
                 ?>
-                <a id="nav-cart-btn" href="<?php echo esc_url( $cart_url ); ?>" class="nav-cart-badge-btn">
-                    <span>🛍️ <?php esc_html_e( 'Cart', 'digital-marketplace' ); ?></span>
+                <a id="nav-cart-btn" href="<?php echo esc_url( $cart_url ); ?>" class="nav-cart-badge-btn" aria-label="<?php esc_attr_e( 'View Cart', 'digital-marketplace' ); ?>">
+                    <span class="cart-btn-icon" aria-hidden="true">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </span>
+                    <span class="cart-btn-label"><?php esc_html_e( 'Cart', 'digital-marketplace' ); ?></span>
                     <span id="nav-cart-badge" class="cart-count-pill"><?php echo esc_html( $cart_count ); ?></span>
                 </a>
             </nav>

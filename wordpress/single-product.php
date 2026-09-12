@@ -43,20 +43,20 @@ get_header(); ?>
 
         <!-- Breadcrumb Navigation -->
         <nav class="breadcrumb-bar" aria-label="<?php esc_attr_e( 'Breadcrumb', 'digital-marketplace' ); ?>">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'digital-marketplace' ); ?></a>
-            <span>/</span>
-            <a href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ); ?>"><?php esc_html_e( 'Products', 'digital-marketplace' ); ?></a>
-            <span>/</span>
-            <a href="<?php echo esc_url( $cat_link ); ?>"><?php echo esc_html( $cat_name ); ?></a>
-            <span>/</span>
-            <span style="color: var(--text-main); font-weight: 600;"><?php the_title(); ?></span>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="breadcrumb-link"><?php esc_html_e( 'Home', 'digital-marketplace' ); ?></a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <a href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ); ?>" class="breadcrumb-link"><?php esc_html_e( 'Catalog', 'digital-marketplace' ); ?></a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <a href="<?php echo esc_url( $cat_link ); ?>" class="breadcrumb-link"><?php echo esc_html( $cat_name ); ?></a>
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current"><?php the_title(); ?></span>
         </nav>
 
         <!-- Product Presentation Layout -->
         <div class="product-single-layout">
             
-            <!-- Left: Gallery Showcase -->
-            <div>
+            <!-- Left: Gallery Showcase & Documentation -->
+            <div class="product-gallery-column">
                 <div class="product-gallery-main">
                     <?php if ( has_post_thumbnail() ) : ?>
                         <?php the_post_thumbnail( 'marketplace-gallery', array( 'id' => 'main-gallery-image' ) ); ?>
@@ -70,107 +70,142 @@ get_header(); ?>
                     <?php
                     $thumb_src = has_post_thumbnail() ? get_the_post_thumbnail_url( $product_id, 'marketplace-gallery' ) : 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80';
                     ?>
-                    <button class="product-thumb-item active" data-full-image="<?php echo esc_url( $thumb_src ); ?>">
+                    <button type="button" class="product-thumb-item active" data-full-image="<?php echo esc_url( $thumb_src ); ?>" aria-label="<?php esc_attr_e( 'Preview 1', 'digital-marketplace' ); ?>">
                         <img src="<?php echo esc_url( $thumb_src ); ?>" alt="<?php the_title_attribute(); ?>" />
                     </button>
                     <!-- Alternate angle mock thumbs for interactive gallery -->
-                    <button class="product-thumb-item" data-full-image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80">
+                    <button type="button" class="product-thumb-item" data-full-image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" aria-label="<?php esc_attr_e( 'Preview 2', 'digital-marketplace' ); ?>">
                         <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=200&q=80" alt="Preview 2" />
                     </button>
-                    <button class="product-thumb-item" data-full-image="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80">
+                    <button type="button" class="product-thumb-item" data-full-image="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80" aria-label="<?php esc_attr_e( 'Preview 3', 'digital-marketplace' ); ?>">
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=200&q=80" alt="Preview 3" />
                     </button>
                 </div>
 
-                <!-- Product Full Description -->
-                <div style="background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; margin-top: 2rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main);">
-                        <?php esc_html_e( 'Product Overview & Specifications', 'digital-marketplace' ); ?>
-                    </h3>
-                    <div style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.7;">
+                <!-- Product Full Description / Documentation -->
+                <div class="product-overview-panel">
+                    <div class="overview-header">
+                        <span class="section-kicker"><?php esc_html_e( 'Architecture & Spec', 'digital-marketplace' ); ?></span>
+                        <h2 class="overview-title">
+                            <?php esc_html_e( 'Asset Overview & Documentation', 'digital-marketplace' ); ?>
+                        </h2>
+                    </div>
+                    <div class="overview-content">
                         <?php the_content(); ?>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Purchasing Box & Specs -->
-            <div>
+            <div class="product-sidebar-column">
                 <div class="product-specs-box">
-                    <span class="product-badge-cat" style="position: static; display: inline-block; margin-bottom: 0.75rem;">
-                        <?php echo esc_html( $cat_name ); ?>
-                    </span>
+                    <div class="product-header-tags">
+                        <span class="product-badge-cat">
+                            <?php echo esc_html( $cat_name ); ?>
+                        </span>
+                        <span class="product-badge-verified">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <?php esc_html_e( 'Audited Code', 'digital-marketplace' ); ?>
+                        </span>
+                    </div>
 
-                    <h1 style="font-size: 1.75rem; font-weight: 900; line-height: 1.2; letter-spacing: -0.02em; color: var(--text-main);">
+                    <h1 class="product-detail-title">
                         <?php the_title(); ?>
                     </h1>
 
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.85rem;">
-                        <span style="color: var(--color-accent-dark); font-weight: 700;">★ <?php echo esc_html( $rating ? $rating : '4.9' ); ?></span>
-                        <span style="color: var(--text-light);">•</span>
-                        <span style="color: var(--text-muted);"><?php echo esc_html( $review_count ? $review_count : '84' ); ?> <?php esc_html_e( 'verified customer reviews', 'digital-marketplace' ); ?></span>
+                    <div class="product-rating-meta">
+                        <div class="star-rating-chip">
+                            <span class="star-icon">★</span>
+                            <span class="rating-num"><?php echo esc_html( $rating ? $rating : '4.9' ); ?></span>
+                        </div>
+                        <span class="meta-dot" aria-hidden="true">•</span>
+                        <span class="review-count-text"><?php echo esc_html( $review_count ? $review_count : '84' ); ?> <?php esc_html_e( 'verified licenses deployed', 'digital-marketplace' ); ?></span>
                     </div>
 
                     <div class="product-single-price">
-                        <span>$<?php echo esc_html( $price ); ?></span>
+                        <span class="price-current">$<?php echo esc_html( number_format( floatval( $price ), 2 ) ); ?></span>
                         <?php if ( $original_price ) : ?>
-                            <span style="font-size: 1.15rem; color: var(--text-light); text-decoration: line-through;">
-                                $<?php echo esc_html( $original_price ); ?>
+                            <span class="price-original">
+                                $<?php echo esc_html( number_format( floatval( $original_price ), 2 ) ); ?>
+                            </span>
+                            <span class="price-discount-pill">
+                                <?php
+                                    $orig_val = floatval( $original_price );
+                                    $curr_val = floatval( $price );
+                                    $savings_pct = ( $orig_val > $curr_val && $orig_val > 0 ) ? round( ( ( $orig_val - $curr_val ) / $orig_val ) * 100 ) : 0;
+                                    echo '-' . esc_html( $savings_pct ) . '%';
+                                ?>
                             </span>
                         <?php endif; ?>
                     </div>
 
                     <!-- Quantity Stepper -->
-                    <div style="margin-bottom: 1.25rem;">
-                        <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem;">
-                            <?php esc_html_e( 'License Quantity:', 'digital-marketplace' ); ?>
-                        </label>
+                    <div class="license-qty-section">
+                        <div class="qty-label-row">
+                            <label class="qty-label" for="license-qty-input">
+                                <?php esc_html_e( 'License Seats / Quantity', 'digital-marketplace' ); ?>
+                            </label>
+                            <span class="qty-hint"><?php esc_html_e( 'Single seat per team member', 'digital-marketplace' ); ?></span>
+                        </div>
                         <div class="qty-stepper">
-                            <button type="button" class="qty-btn qty-btn-minus">-</button>
+                            <button type="button" class="qty-btn qty-btn-minus" aria-label="<?php esc_attr_e( 'Decrease quantity', 'digital-marketplace' ); ?>">−</button>
                             <span class="qty-val">1</span>
-                            <button type="button" class="qty-btn qty-btn-plus">+</button>
+                            <button type="button" class="qty-btn qty-btn-plus" aria-label="<?php esc_attr_e( 'Increase quantity', 'digital-marketplace' ); ?>">+</button>
                         </div>
                     </div>
 
                     <!-- Action Buttons with DMC AJAX Hooks -->
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <div class="product-actions-block">
                         <button type="button" class="btn btn-primary btn-block btn-lg dmc-add-to-cart-btn" data-product-id="<?php echo esc_attr( $product_id ); ?>">
-                            🛍️ <?php esc_html_e( 'Add to Cart', 'digital-marketplace' ); ?>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                            <span><?php esc_html_e( 'Add to Cart', 'digital-marketplace' ); ?></span>
                         </button>
                         <button type="button" class="btn btn-accent btn-block btn-lg dmc-buy-now-btn" data-product-id="<?php echo esc_attr( $product_id ); ?>">
-                            ⚡ <?php esc_html_e( 'Buy Now', 'digital-marketplace' ); ?>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                            <span><?php esc_html_e( 'Instant Buy with Crypto', 'digital-marketplace' ); ?></span>
                         </button>
                     </div>
 
                     <!-- Verified Features Checklist -->
-                    <h4 style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);">
-                        <?php esc_html_e( 'What is Included', 'digital-marketplace' ); ?>
-                    </h4>
-                    <ul class="product-features-list">
-                        <?php foreach ( $features as $feat ) : ?>
-                            <li>
-                                <span class="check-icon">✓</span>
-                                <span><?php echo esc_html( $feat ); ?></span>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                    <div class="included-manifest-section">
+                        <h4 class="manifest-heading">
+                            <?php esc_html_e( 'What is Included in Download Package', 'digital-marketplace' ); ?>
+                        </h4>
+                        <ul class="product-features-list">
+                            <?php foreach ( $features as $feat ) : ?>
+                                <li>
+                                    <span class="check-icon" aria-hidden="true">✓</span>
+                                    <span><?php echo esc_html( $feat ); ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
 
                     <!-- Technical Specifications -->
                     <div class="specs-grid">
                         <div class="spec-row">
-                            <span class="spec-label"><?php esc_html_e( 'File Format', 'digital-marketplace' ); ?></span>
-                            <span class="spec-value"><?php echo esc_html( $file_format ? $file_format : 'ZIP / Multi-Source' ); ?></span>
+                            <span class="spec-label"><?php esc_html_e( 'Archive Format', 'digital-marketplace' ); ?></span>
+                            <span class="spec-value spec-mono"><?php echo esc_html( $file_format ? $file_format : 'ZIP / Multi-Source' ); ?></span>
                         </div>
                         <div class="spec-row">
-                            <span class="spec-label"><?php esc_html_e( 'Download Size', 'digital-marketplace' ); ?></span>
-                            <span class="spec-value"><?php echo esc_html( $file_size ? $file_size : '52 MB' ); ?></span>
+                            <span class="spec-label"><?php esc_html_e( 'Package Size', 'digital-marketplace' ); ?></span>
+                            <span class="spec-value spec-mono"><?php echo esc_html( $file_size ? $file_size : '52.4 MB' ); ?></span>
                         </div>
                         <div class="spec-row">
                             <span class="spec-label"><?php esc_html_e( 'Commercial Rights', 'digital-marketplace' ); ?></span>
-                            <span class="spec-value" style="color: var(--color-success);"><?php esc_html_e( 'Standard Commercial License', 'digital-marketplace' ); ?></span>
+                            <span class="spec-value spec-success"><?php esc_html_e( 'Perpetual Commercial License', 'digital-marketplace' ); ?></span>
                         </div>
                         <div class="spec-row">
-                            <span class="spec-label"><?php esc_html_e( 'Delivery Format', 'digital-marketplace' ); ?></span>
-                            <span class="spec-value"><?php esc_html_e( 'Direct Instant Download', 'digital-marketplace' ); ?></span>
+                            <span class="spec-label"><?php esc_html_e( 'Fulfillment Method', 'digital-marketplace' ); ?></span>
+                            <span class="spec-value"><?php esc_html_e( 'Direct ZIP & Repo Token', 'digital-marketplace' ); ?></span>
                         </div>
                     </div>
                 </div>
@@ -197,10 +232,13 @@ get_header(); ?>
         $related_query = new WP_Query( $related_args );
 
         if ( $related_query->have_posts() ) : ?>
-            <div style="border-top: 1px solid var(--border-subtle); padding-top: 3rem; margin-top: 2rem;">
-                <h3 class="section-title" style="margin-bottom: 1.5rem;">
-                    <?php esc_html_e( 'You May Also Need', 'digital-marketplace' ); ?>
-                </h3>
+            <div class="related-products-section">
+                <div class="section-header">
+                    <div>
+                        <span class="section-kicker"><?php esc_html_e( 'Complementary Tools', 'digital-marketplace' ); ?></span>
+                        <h3 class="section-title"><?php esc_html_e( 'Related Production Assets', 'digital-marketplace' ); ?></h3>
+                    </div>
+                </div>
                 <div class="products-grid">
                     <?php while ( $related_query->have_posts() ) : $related_query->the_post();
                         $rel_price = digital_marketplace_get_price( get_the_ID() );
@@ -216,8 +254,8 @@ get_header(); ?>
                             <div class="product-card-body">
                                 <h4 class="product-card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h4>
                                 <div class="product-card-footer">
-                                    <span class="product-price">$<?php echo esc_html( $rel_price ); ?></span>
-                                    <a href="<?php the_permalink(); ?>" class="btn btn-secondary btn-sm"><?php esc_html_e( 'View', 'digital-marketplace' ); ?></a>
+                                    <span class="product-price">$<?php echo esc_html( number_format( floatval( $rel_price ), 2 ) ); ?></span>
+                                    <a href="<?php the_permalink(); ?>" class="btn btn-secondary btn-sm"><?php esc_html_e( 'Inspect Asset →', 'digital-marketplace' ); ?></a>
                                 </div>
                             </div>
                         </article>

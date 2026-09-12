@@ -13,7 +13,12 @@ get_header(); ?>
         <?php if ( ! is_user_logged_in() ) : ?>
             <!-- Prompt to Log In if not authenticated -->
             <div class="account-auth-prompt-card">
-                <div class="prompt-icon-badge">🔒</div>
+                <div class="prompt-icon-badge" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
                 <h1 class="prompt-title"><?php esc_html_e( 'Sign in to Access Your Account', 'digital-marketplace' ); ?></h1>
                 <p class="prompt-subtitle">
                     <?php esc_html_e( 'View your purchased asset licenses, invoices, and instantaneous digital download tokens.', 'digital-marketplace' ); ?>
@@ -73,15 +78,33 @@ get_header(); ?>
             <!-- Modern Tab Navigation Bar -->
             <nav class="account-tab-nav" aria-label="<?php esc_attr_e( 'Account sections', 'digital-marketplace' ); ?>">
                 <button type="button" class="tab-btn active" data-target="panel-orders">
-                    <span class="tab-icon">📦</span>
+                    <span class="tab-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </span>
                     <span><?php esc_html_e( 'Order History', 'digital-marketplace' ); ?></span>
                 </button>
                 <button type="button" class="tab-btn" data-target="panel-downloads">
-                    <span class="tab-icon">⬇️</span>
+                    <span class="tab-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </span>
                     <span><?php esc_html_e( 'My Downloads', 'digital-marketplace' ); ?></span>
                 </button>
                 <button type="button" class="tab-btn" data-target="panel-settings">
-                    <span class="tab-icon">⚙️</span>
+                    <span class="tab-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </span>
                     <span><?php esc_html_e( 'Profile Settings', 'digital-marketplace' ); ?></span>
                 </button>
             </nav>
@@ -197,7 +220,12 @@ get_header(); ?>
                                                         <div class="order-actions-stack">
                                                             <?php foreach ( $order_downloads as $odl ) : ?>
                                                                 <a href="<?php echo esc_url( $odl['url'] ); ?>" class="btn btn-primary btn-sm btn-download-token">
-                                                                    ⬇️ <?php echo esc_html( count( $order_downloads ) > 1 ? $odl['title'] : __( 'Download File', 'digital-marketplace' ) ); ?>
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                                    </svg>
+                                                                    <span><?php echo esc_html( count( $order_downloads ) > 1 ? $odl['title'] : __( 'Download File', 'digital-marketplace' ) ); ?></span>
                                                                 </a>
                                                             <?php endforeach; ?>
                                                         </div>
@@ -209,7 +237,13 @@ get_header(); ?>
                                                 <?php elseif ( $status === 'Awaiting Payment' || $status === 'Paid - Processing' ) : ?>
                                                     <div class="order-actions-stack">
                                                         <a href="<?php echo esc_url( $confirm_url ); ?>" class="btn btn-primary btn-sm btn-payment-info">
-                                                            🪙 <?php esc_html_e( 'Payment Info', 'digital-marketplace' ); ?>
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                                <circle cx="12" cy="12" r="10"></circle>
+                                                                <line x1="12" y1="6" x2="12" y2="18"></line>
+                                                                <line x1="9" y1="9" x2="15" y2="9"></line>
+                                                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                                                            </svg>
+                                                            <span><?php esc_html_e( 'Payment Info', 'digital-marketplace' ); ?></span>
                                                         </a>
                                                     </div>
                                                 <?php else : ?>
@@ -276,7 +310,12 @@ get_header(); ?>
                                         <td class="order-total-cell">$49.00</td>
                                         <td>
                                             <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="alert('Download started: Apex-UI-Kit-v2.4.zip'); return false;">
-                                                ⬇️ <?php esc_html_e( 'Download ZIP', 'digital-marketplace' ); ?>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                </svg>
+                                                <span><?php esc_html_e( 'Download ZIP', 'digital-marketplace' ); ?></span>
                                             </a>
                                         </td>
                                     </tr>
@@ -291,7 +330,12 @@ get_header(); ?>
                                         <td class="order-total-cell">$79.00</td>
                                         <td>
                                             <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="alert('Download started: NextJS15-Starter-v1.8.zip'); return false;">
-                                                ⬇️ <?php esc_html_e( 'Download ZIP', 'digital-marketplace' ); ?>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                </svg>
+                                                <span><?php esc_html_e( 'Download ZIP', 'digital-marketplace' ); ?></span>
                                             </a>
                                         </td>
                                     </tr>
@@ -410,7 +454,12 @@ get_header(); ?>
                                     </div>
                                     <div class="download-action-wrap">
                                         <a href="<?php echo esc_url( $dl_item['download_url'] ); ?>" class="btn btn-primary btn-sm btn-download-token">
-                                            ⬇️ <?php esc_html_e( 'Download File', 'digital-marketplace' ); ?>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            <span><?php esc_html_e( 'Download File', 'digital-marketplace' ); ?></span>
                                         </a>
                                     </div>
                                 </div>
@@ -423,7 +472,13 @@ get_header(); ?>
                             <?php foreach ( $wc_downloads as $wc_download ) : ?>
                                 <div class="download-card-item">
                                     <div class="download-item-main">
-                                        <div class="download-icon-box">📦</div>
+                                        <div class="download-icon-box">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                            </svg>
+                                        </div>
                                         <div>
                                             <h4 class="download-title">
                                                 <?php echo esc_html( $wc_download['product_name'] ); ?>
@@ -435,7 +490,12 @@ get_header(); ?>
                                         </div>
                                     </div>
                                     <a href="<?php echo esc_url( $wc_download['download_url'] ); ?>" class="btn btn-primary btn-sm btn-download-token">
-                                        ⬇️ <?php esc_html_e( 'Download', 'digital-marketplace' ); ?>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span><?php esc_html_e( 'Download', 'digital-marketplace' ); ?></span>
                                     </a>
                                 </div>
                             <?php endforeach; ?>
@@ -444,7 +504,11 @@ get_header(); ?>
                     <?php else : ?>
                         <!-- Clean Empty State -->
                         <div class="account-empty-state">
-                            <div class="empty-state-icon">📂</div>
+                            <div class="empty-state-icon">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
                             <h3 class="empty-state-title">
                                 <?php esc_html_e( 'No Downloadable Files Available', 'digital-marketplace' ); ?>
                             </h3>

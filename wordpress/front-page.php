@@ -9,62 +9,152 @@ get_header(); ?>
 
 <div id="home-page-container">
 
-    <!-- Hero Section -->
+    <!-- Hero Section: The Bold Memorable Moment -->
     <section id="hero-section" class="hero-section">
         <div class="site-container">
-            <div class="hero-pill">
-                <span>✨</span>
-                <span><?php esc_html_e( 'Curated Digital Marketplace for Creators & Engineers', 'digital-marketplace' ); ?></span>
-            </div>
+            <div class="hero-grid-layout">
+                
+                <!-- Left: Studio Manifesto & Search -->
+                <div class="hero-content-col">
+                    <div class="hero-pill">
+                        <span class="hero-pill-indicator"></span>
+                        <span><?php esc_html_e( 'Curated Engineering & Design Asset Studio', 'digital-marketplace' ); ?></span>
+                    </div>
 
-            <h1 class="hero-title">
-                <?php esc_html_e( 'Craft better products with premium digital assets.', 'digital-marketplace' ); ?>
-            </h1>
+                    <h1 class="hero-title">
+                        <?php esc_html_e( 'Production-ready design systems, boilerplates, and developer toolkits.', 'digital-marketplace' ); ?>
+                    </h1>
 
-            <p class="hero-sub">
-                <?php esc_html_e( 'Browse world-class UI design systems, full-stack boilerplates, high-fidelity 3D packs, and productivity templates with instant delivery and commercial licenses.', 'digital-marketplace' ); ?>
-            </p>
+                    <p class="hero-sub">
+                        <?php esc_html_e( 'Engineered for high-velocity teams. Access audited UI component kits, full-stack Next.js and React boilerplates, and typography systems with instant cryptographic settlement and perpetual commercial rights.', 'digital-marketplace' ); ?>
+                    </p>
 
-            <form role="search" method="get" class="hero-search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-                <span style="color: var(--text-muted); font-size: 1rem; margin-right: 0.5rem;">🔍</span>
-                <input 
-                    type="search" 
-                    name="s" 
-                    placeholder="<?php esc_attr_e( 'Search templates, fonts, design kits, boilerplates...', 'digital-marketplace' ); ?>" 
-                />
-                <input type="hidden" name="post_type" value="product" />
-                <button type="submit" class="hero-search-btn">
-                    <?php esc_html_e( 'Find Assets', 'digital-marketplace' ); ?>
-                </button>
-            </form>
+                    <!-- Search Form -->
+                    <form role="search" method="get" class="hero-search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+                        <span class="hero-search-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </span>
+                        <input 
+                            type="search" 
+                            name="s" 
+                            placeholder="<?php esc_attr_e( 'Search by framework, stack, or asset type (e.g. Next.js, Figma, Tailwind)...', 'digital-marketplace' ); ?>" 
+                        />
+                        <input type="hidden" name="post_type" value="product" />
+                        <button type="submit" class="hero-search-btn">
+                            <?php esc_html_e( 'Search Assets', 'digital-marketplace' ); ?>
+                        </button>
+                    </form>
 
-            <div class="hero-perks">
-                <div class="perk-item">
-                    <span class="icon">✓</span>
-                    <span><?php esc_html_e( 'Verified Code & Files', 'digital-marketplace' ); ?></span>
+                    <!-- Quick Technology Filter Tags -->
+                    <div class="hero-quick-tags">
+                        <span class="quick-tags-label"><?php esc_html_e( 'Popular Stacks:', 'digital-marketplace' ); ?></span>
+                        <a href="<?php echo esc_url( home_url( '/products?s=nextjs' ) ); ?>" class="quick-tag-chip">Next.js 15</a>
+                        <a href="<?php echo esc_url( home_url( '/products?s=figma' ) ); ?>" class="quick-tag-chip">Figma Variables</a>
+                        <a href="<?php echo esc_url( home_url( '/products?s=tailwind' ) ); ?>" class="quick-tag-chip">Tailwind v4</a>
+                        <a href="<?php echo esc_url( home_url( '/products?s=typescript' ) ); ?>" class="quick-tag-chip">TypeScript</a>
+                    </div>
+
+                    <!-- Verified Perks Row -->
+                    <div class="hero-perks">
+                        <div class="perk-item">
+                            <span class="icon">✓</span>
+                            <span><?php esc_html_e( 'Audited Code & Tokens', 'digital-marketplace' ); ?></span>
+                        </div>
+                        <div class="perk-item">
+                            <span class="icon">✓</span>
+                            <span><?php esc_html_e( 'Instant ZIP & Repo Access', 'digital-marketplace' ); ?></span>
+                        </div>
+                        <div class="perk-item">
+                            <span class="icon">✓</span>
+                            <span><?php esc_html_e( 'Perpetual Commercial Rights', 'digital-marketplace' ); ?></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="perk-item">
-                    <span class="icon">✓</span>
-                    <span><?php esc_html_e( 'Instant Digital Downloads', 'digital-marketplace' ); ?></span>
+
+                <!-- Right: Bold Visual Moment - Architectural Asset Dossier Card -->
+                <div class="hero-blueprint-col" aria-hidden="true">
+                    <div class="hero-blueprint-card">
+                        <div class="blueprint-card-header">
+                            <div class="blueprint-window-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="blueprint-file-tab">
+                                <span class="tab-dot"></span>
+                                <span class="tab-filename">apex-system-v2.4.zip</span>
+                            </div>
+                            <span class="blueprint-badge-verified">Verified 100%</span>
+                        </div>
+
+                        <div class="blueprint-meta-bar">
+                            <div class="blueprint-meta-stat">
+                                <span class="meta-label">Package Size</span>
+                                <span class="meta-val">48.6 MB</span>
+                            </div>
+                            <div class="blueprint-meta-stat">
+                                <span class="meta-label">Components</span>
+                                <span class="meta-val">1,420+</span>
+                            </div>
+                            <div class="blueprint-meta-stat">
+                                <span class="meta-label">Target Runtime</span>
+                                <span class="meta-val">React 19 / TS 5.4</span>
+                            </div>
+                        </div>
+
+                        <div class="blueprint-code-preview">
+                            <div class="code-line"><span class="code-comment">// Verified Production Stack Manifest</span></div>
+                            <div class="code-line"><span class="code-kw">import</span> { Button, Dialog, DataTable } <span class="code-kw">from</span> <span class="code-str">'@apex/core'</span>;</div>
+                            <div class="code-line"><span class="code-kw">export default function</span> <span class="code-fn">AppShell</span>({ children }: LayoutProps) {</div>
+                            <div class="code-line code-indent"><span class="code-kw">return</span> &lt;<span class="code-tag">ThemeProvider</span> tokens={systemTokens}&gt;{children}&lt;/<span class="code-tag">ThemeProvider</span>&gt;;</div>
+                            <div class="code-line">}</div>
+                        </div>
+
+                        <div class="blueprint-specs-checklist">
+                            <div class="blueprint-spec-item">
+                                <span class="spec-check">✓</span>
+                                <span class="spec-text">WCAG 2.1 AAA Accessibility Tree Validated</span>
+                            </div>
+                            <div class="blueprint-spec-item">
+                                <span class="spec-check">✓</span>
+                                <span class="spec-text">Zero External Runtime Dependencies</span>
+                            </div>
+                            <div class="blueprint-spec-item">
+                                <span class="spec-check">✓</span>
+                                <span class="spec-text">Figma Auto-Layout 5.0 + Variables Synced</span>
+                            </div>
+                        </div>
+
+                        <div class="blueprint-card-footer">
+                            <div class="blueprint-price-tag">
+                                <span class="price-val">$59.00</span>
+                                <span class="price-type">Commercial Tier</span>
+                            </div>
+                            <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="blueprint-cta-btn">
+                                <span>Inspect Live Asset</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="perk-item">
-                    <span class="icon">✓</span>
-                    <span><?php esc_html_e( 'Commercial Project Rights', 'digital-marketplace' ); ?></span>
-                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Categories Section -->
-    <section id="categories-section" style="padding: 3.5rem 0 1rem;">
+    <!-- Categories Section: Disciplined Technical Directory -->
+    <section id="categories-section" class="categories-section">
         <div class="site-container">
             <div class="section-header">
                 <div>
-                    <h2 class="section-title"><?php esc_html_e( 'Explore Categories', 'digital-marketplace' ); ?></h2>
-                    <p class="section-sub"><?php esc_html_e( 'Find exactly what you need for your next build', 'digital-marketplace' ); ?></p>
+                    <span class="section-kicker"><?php esc_html_e( 'Asset Taxonomy', 'digital-marketplace' ); ?></span>
+                    <h2 class="section-title"><?php esc_html_e( 'Explore by Category', 'digital-marketplace' ); ?></h2>
+                    <p class="section-sub"><?php esc_html_e( 'Organized directories of software components, UI frameworks, and creative utilities.', 'digital-marketplace' ); ?></p>
                 </div>
-                <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">
-                    <?php esc_html_e( 'View All →', 'digital-marketplace' ); ?>
+                <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="section-more-link">
+                    <span><?php esc_html_e( 'View All Categories', 'digital-marketplace' ); ?></span>
+                    <span aria-hidden="true">→</span>
                 </a>
             </div>
 
@@ -107,28 +197,34 @@ get_header(); ?>
                         );
                         ?>
                         <a href="<?php echo esc_url( get_term_link( $term ) ); ?>" class="category-card">
-                            <div class="category-card-icon"><?php echo esc_html( $icon ); ?></div>
-                            <span class="category-card-title"><?php echo esc_html( $term->name ); ?></span>
-                            <span class="category-card-count"><?php echo esc_html( $count_text ); ?></span>
+                            <div class="category-card-icon" aria-hidden="true"><?php echo esc_html( $icon ); ?></div>
+                            <div class="category-card-body">
+                                <span class="category-card-title"><?php echo esc_html( $term->name ); ?></span>
+                                <span class="category-card-count"><?php echo esc_html( $count_text ); ?></span>
+                            </div>
+                            <span class="category-card-arrow" aria-hidden="true">→</span>
                         </a>
                     <?php endforeach;
                 else : 
                     // Clean starter layout when taxonomy terms have not yet been seeded
                     $starter_categories = array(
-                        array( 'name' => __( 'UI & Design Kits', 'digital-marketplace' ), 'icon' => '🎨', 'slug' => 'ui-design-kits' ),
-                        array( 'name' => __( 'Developer Boilerplates', 'digital-marketplace' ), 'icon' => '💻', 'slug' => 'developer-boilerplates' ),
-                        array( 'name' => __( 'Fonts & Typography', 'digital-marketplace' ), 'icon' => '🔤', 'slug' => 'fonts-typography' ),
-                        array( 'name' => __( 'Audio & SFX Packs', 'digital-marketplace' ), 'icon' => '🎵', 'slug' => 'audio-sfx-packs' ),
-                        array( 'name' => __( '3D Assets & Icons', 'digital-marketplace' ), 'icon' => '🧊', 'slug' => '3d-assets-icons' ),
-                        array( 'name' => __( 'Productivity Templates', 'digital-marketplace' ), 'icon' => '📈', 'slug' => 'productivity-templates' ),
+                        array( 'name' => __( 'UI & Design Kits', 'digital-marketplace' ), 'icon' => '🎨', 'slug' => 'ui-design-kits', 'count' => '24 items' ),
+                        array( 'name' => __( 'Developer Boilerplates', 'digital-marketplace' ), 'icon' => '💻', 'slug' => 'developer-boilerplates', 'count' => '18 items' ),
+                        array( 'name' => __( 'Fonts & Typography', 'digital-marketplace' ), 'icon' => '🔤', 'slug' => 'fonts-typography', 'count' => '12 items' ),
+                        array( 'name' => __( 'Audio & SFX Packs', 'digital-marketplace' ), 'icon' => '🎵', 'slug' => 'audio-sfx-packs', 'count' => '9 items' ),
+                        array( 'name' => __( '3D Assets & Icons', 'digital-marketplace' ), 'icon' => '🧊', 'slug' => '3d-assets-icons', 'count' => '15 items' ),
+                        array( 'name' => __( 'Productivity Templates', 'digital-marketplace' ), 'icon' => '📈', 'slug' => 'productivity-templates', 'count' => '14 items' ),
                     );
                     foreach ( $starter_categories as $cat ) :
                         $cat_url = add_query_arg( 'product_cat', $cat['slug'], home_url( '/products' ) );
                     ?>
                         <a href="<?php echo esc_url( $cat_url ); ?>" class="category-card">
-                            <div class="category-card-icon"><?php echo esc_html( $cat['icon'] ); ?></div>
-                            <span class="category-card-title"><?php echo esc_html( $cat['name'] ); ?></span>
-                            <span class="category-card-count"><?php esc_html_e( 'Explore category', 'digital-marketplace' ); ?></span>
+                            <div class="category-card-icon" aria-hidden="true"><?php echo esc_html( $cat['icon'] ); ?></div>
+                            <div class="category-card-body">
+                                <span class="category-card-title"><?php echo esc_html( $cat['name'] ); ?></span>
+                                <span class="category-card-count"><?php echo esc_html( $cat['count'] ); ?></span>
+                            </div>
+                            <span class="category-card-arrow" aria-hidden="true">→</span>
                         </a>
                     <?php endforeach;
                 endif; ?>
@@ -137,18 +233,16 @@ get_header(); ?>
     </section>
 
     <!-- Featured Products Dynamic Query -->
-    <section id="featured-products-section" style="padding: 2rem 0;">
+    <section id="featured-products-section" class="featured-products-section">
         <div class="site-container">
             <div class="section-header">
                 <div>
-                    <span style="display: inline-block; padding: 0.2rem 0.6rem; background-color: var(--color-accent-bg); color: var(--color-accent-dark); font-size: 0.725rem; font-weight: 700; border-radius: var(--radius-sm); margin-bottom: 0.35rem;">
-                        <?php esc_html_e( 'Staff Picks', 'digital-marketplace' ); ?>
-                    </span>
-                    <h2 class="section-title"><?php esc_html_e( 'Featured Products', 'digital-marketplace' ); ?></h2>
-                    <p class="section-sub"><?php esc_html_e( 'Top-rated digital tools loved by creators worldwide', 'digital-marketplace' ); ?></p>
+                    <span class="section-kicker"><?php esc_html_e( 'Curated Drops', 'digital-marketplace' ); ?></span>
+                    <h2 class="section-title"><?php esc_html_e( 'Featured Digital Assets', 'digital-marketplace' ); ?></h2>
+                    <p class="section-sub"><?php esc_html_e( 'Audited templates and UI systems with instant download tokens and commercial rights.', 'digital-marketplace' ); ?></p>
                 </div>
                 <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-secondary btn-sm">
-                    <?php esc_html_e( 'Browse Full Catalog', 'digital-marketplace' ); ?>
+                    <?php esc_html_e( 'Browse All Assets', 'digital-marketplace' ); ?>
                 </a>
             </div>
 
@@ -187,6 +281,7 @@ get_header(); ?>
                         $original_price = get_post_meta( get_the_ID(), '_product_original_price', true );
                         $rating         = get_post_meta( get_the_ID(), '_product_rating', true );
                         $review_count   = get_post_meta( get_the_ID(), '_product_review_count', true );
+                        $file_format    = get_post_meta( get_the_ID(), '_product_file_format', true );
                         $terms          = get_the_terms( get_the_ID(), 'product_cat' );
                         $category_name  = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : 'Digital Asset';
                         ?>
@@ -198,37 +293,40 @@ get_header(); ?>
                                     <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80" alt="<?php the_title_attribute(); ?>" />
                                 <?php endif; ?>
                                 <span class="product-badge-cat"><?php echo esc_html( $category_name ); ?></span>
-                                <span class="product-badge-featured"><?php esc_html_e( 'Featured', 'digital-marketplace' ); ?></span>
+                                <span class="product-badge-featured"><?php esc_html_e( 'Verified', 'digital-marketplace' ); ?></span>
                             </a>
                             <div class="product-card-body">
                                 <div class="product-card-meta">
-                                    <span><?php esc_html_e( 'By', 'digital-marketplace' ); ?> <?php the_author(); ?></span>
+                                    <span class="product-author-tag"><?php esc_html_e( 'By', 'digital-marketplace' ); ?> <?php the_author(); ?></span>
                                     <?php if ( $rating ) : ?>
                                         <div class="product-card-rating">
-                                            <span>★ <?php echo esc_html( $rating ); ?></span>
+                                            <span class="star-rating">★ <?php echo esc_html( $rating ); ?></span>
                                             <?php if ( $review_count ) : ?>
-                                                <span style="color: var(--text-light);">(<?php echo esc_html( $review_count ); ?>)</span>
+                                                <span class="rating-count">(<?php echo esc_html( $review_count ); ?>)</span>
                                             <?php endif; ?>
                                         </div>
                                     <?php else : ?>
                                         <div class="product-card-rating">
-                                            <span style="color: #059669; font-size: 0.75rem; font-weight: 600;">✓ <?php esc_html_e( 'Verified', 'digital-marketplace' ); ?></span>
+                                            <span class="verified-tag">✓ <?php esc_html_e( 'Audited', 'digital-marketplace' ); ?></span>
                                         </div>
                                     <?php endif; ?>
                                 </div>
+
                                 <h3 class="product-card-title">
                                     <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                                 </h3>
+
                                 <p class="product-card-desc"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 14 ) ); ?></p>
+
                                 <div class="product-card-footer">
                                     <div class="product-price-box">
-                                        <span class="product-price">$<?php echo esc_html( $price ); ?></span>
+                                        <span class="product-price">$<?php echo esc_html( number_format( floatval( $price ), 2 ) ); ?></span>
                                         <?php if ( $original_price ) : ?>
-                                            <span class="product-price-orig">$<?php echo esc_html( $original_price ); ?></span>
+                                            <span class="product-price-orig">$<?php echo esc_html( number_format( floatval( $original_price ), 2 ) ); ?></span>
                                         <?php endif; ?>
                                     </div>
                                     <a href="<?php the_permalink(); ?>" class="btn btn-primary btn-sm">
-                                        <?php esc_html_e( 'Details →', 'digital-marketplace' ); ?>
+                                        <?php esc_html_e( 'Inspect Asset →', 'digital-marketplace' ); ?>
                                     </a>
                                 </div>
                             </div>
@@ -236,14 +334,14 @@ get_header(); ?>
                     <?php endwhile;
                     wp_reset_postdata();
                 else : ?>
-                    <!-- Sample Card Placeholder if database is freshly initialized -->
-                    <div style="grid-column: 1 / -1; padding: 2.5rem; background: #fff; border-radius: var(--radius-lg); border: 1px dashed var(--border-subtle); text-align: center;">
-                        <h4 style="font-weight: 700; margin-bottom: 0.5rem;"><?php esc_html_e( 'Ready for your Products', 'digital-marketplace' ); ?></h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-                            <?php esc_html_e( 'Create your first product in WordPress Admin > Products > Add New to have it appear dynamically here.', 'digital-marketplace' ); ?>
+                    <!-- Clean starter card placeholder if database is freshly initialized -->
+                    <div class="products-empty-state">
+                        <h4><?php esc_html_e( 'Asset Catalog Ready', 'digital-marketplace' ); ?></h4>
+                        <p>
+                            <?php esc_html_e( 'Create your first product in WordPress Admin > Products to populate this section dynamically.', 'digital-marketplace' ); ?>
                         </p>
                         <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=product' ) ); ?>" class="btn btn-primary btn-sm">
-                            <?php esc_html_e( 'Add First Product in WP Admin', 'digital-marketplace' ); ?>
+                            <?php esc_html_e( 'Add Product in Admin', 'digital-marketplace' ); ?>
                         </a>
                     </div>
                 <?php endif; ?>
@@ -251,24 +349,65 @@ get_header(); ?>
         </div>
     </section>
 
-    <!-- Creator Trust Banner -->
-    <div class="site-container">
-        <section id="trust-banner-section" class="trust-banner">
-            <span style="display: inline-block; padding: 0.25rem 0.75rem; background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">
-                <?php esc_html_e( 'Creator Marketplace Guarantee', 'digital-marketplace' ); ?>
-            </span>
-            <h2><?php esc_html_e( 'Built by developers & designers, for developers & designers.', 'digital-marketplace' ); ?></h2>
-            <p><?php esc_html_e( 'Never start from a blank canvas again. Every asset is strictly audited for clean structure, standard naming conventions, and instant production integration.', 'digital-marketplace' ); ?></p>
-            <div class="trust-banner-actions">
-                <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-accent btn-lg">
-                    <?php esc_html_e( 'Explore All Products', 'digital-marketplace' ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/login' ) ); ?>" class="btn btn-secondary btn-lg" style="background-color: #292524; color: #fff; border-color: #44403c;">
-                    <?php esc_html_e( 'Join as Customer', 'digital-marketplace' ); ?>
+    <!-- Engineering & Quality Standards Matrix (Disciplined replacement for generic banner) -->
+    <section id="trust-banner-section" class="standards-matrix-section">
+        <div class="site-container">
+            <div class="standards-matrix-header">
+                <span class="section-kicker"><?php esc_html_e( 'Verification Guarantee', 'digital-marketplace' ); ?></span>
+                <h2 class="standards-matrix-title"><?php esc_html_e( 'Studio Quality Standards for Production Builds', 'digital-marketplace' ); ?></h2>
+                <p class="standards-matrix-sub"><?php esc_html_e( 'Every item in the marketplace is held to strict engineering criteria before listing.', 'digital-marketplace' ); ?></p>
+            </div>
+
+            <div class="standards-grid">
+                <div class="standard-card">
+                    <div class="standard-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="standard-title"><?php esc_html_e( 'Clean Code Audit', 'digital-marketplace' ); ?></h3>
+                    <p class="standard-desc"><?php esc_html_e( 'Zero spaghetti code or undocumented props. All boilerplates feature semantic file hierarchies, linting rules, and strict typing.', 'digital-marketplace' ); ?></p>
+                </div>
+
+                <div class="standard-card">
+                    <div class="standard-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3 class="standard-title"><?php esc_html_e( 'Instant Delivery Tokens', 'digital-marketplace' ); ?></h3>
+                    <p class="standard-desc"><?php esc_html_e( 'No waiting for email receipts. Tokenized download packages and private repo links are issued in real-time upon cryptographic confirmation.', 'digital-marketplace' ); ?></p>
+                </div>
+
+                <div class="standard-card">
+                    <div class="standard-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="standard-title"><?php esc_html_e( 'Commercial Project License', 'digital-marketplace' ); ?></h3>
+                    <p class="standard-desc"><?php esc_html_e( 'Build unlimited personal and client projects without recurring seat fees or distribution royalties.', 'digital-marketplace' ); ?></p>
+                </div>
+
+                <div class="standard-card">
+                    <div class="standard-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                        </svg>
+                    </div>
+                    <h3 class="standard-title"><?php esc_html_e( 'Lifetime Version Upgrades', 'digital-marketplace' ); ?></h3>
+                    <p class="standard-desc"><?php esc_html_e( 'Re-download newer releases directly from your account dashboard as frameworks and design tools evolve.', 'digital-marketplace' ); ?></p>
+                </div>
+            </div>
+
+            <div class="standards-action-wrap">
+                <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-primary btn-lg">
+                    <?php esc_html_e( 'Explore All Digital Assets →', 'digital-marketplace' ); ?>
                 </a>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
 </div>
 

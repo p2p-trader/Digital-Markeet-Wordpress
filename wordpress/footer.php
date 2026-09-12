@@ -13,70 +13,97 @@
         <!-- Value Props Row -->
         <div class="footer-features-row">
             <div class="footer-feature">
-                <div class="footer-feature-icon">⚡</div>
-                <div>
-                    <h4><?php esc_html_e( 'Instant Digital Delivery', 'digital-marketplace' ); ?></h4>
-                    <p><?php esc_html_e( 'Receive access links, source repositories, and design asset files the moment payment completes.', 'digital-marketplace' ); ?></p>
+                <div class="footer-feature-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <div class="footer-feature-text">
+                    <h4><?php esc_html_e( 'Instant Digital Fulfillment', 'digital-marketplace' ); ?></h4>
+                    <p><?php esc_html_e( 'Direct ZIP download packages, tokenized license keys, and Git repository access available immediately upon settlement.', 'digital-marketplace' ); ?></p>
                 </div>
             </div>
 
             <div class="footer-feature">
-                <div class="footer-feature-icon">🛡️</div>
-                <div>
-                    <h4><?php esc_html_e( 'Verified Creator Quality', 'digital-marketplace' ); ?></h4>
-                    <p><?php esc_html_e( 'Every boilerplate, UI kit, and asset pack is tested for clean code, typography scale, and standards.', 'digital-marketplace' ); ?></p>
+                <div class="footer-feature-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div class="footer-feature-text">
+                    <h4><?php esc_html_e( 'Architectural Code Quality', 'digital-marketplace' ); ?></h4>
+                    <p><?php esc_html_e( 'Every design kit, component library, and starter stack is audited for semantic markup, strict TypeScript, and modular tokens.', 'digital-marketplace' ); ?></p>
                 </div>
             </div>
 
             <div class="footer-feature">
-                <div class="footer-feature-icon">🔄</div>
-                <div>
-                    <h4><?php esc_html_e( 'Lifetime Updates', 'digital-marketplace' ); ?></h4>
-                    <p><?php esc_html_e( 'Download future framework updates, bugfixes, and expansions directly from your personal dashboard.', 'digital-marketplace' ); ?></p>
+                <div class="footer-feature-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                    </svg>
+                </div>
+                <div class="footer-feature-text">
+                    <h4><?php esc_html_e( 'Version Updates Included', 'digital-marketplace' ); ?></h4>
+                    <p><?php esc_html_e( 'Receive framework upgrades, bug fixes, and patch releases directly through your verified account dashboard.', 'digital-marketplace' ); ?></p>
                 </div>
             </div>
         </div>
 
         <!-- Navigation Columns -->
         <div class="footer-nav-grid">
-            <div class="footer-col">
-                <div class="brand-logo" style="color: #fff; margin-bottom: 0.75rem;">
-                    <div class="brand-icon">✨</div>
-                    <span><?php bloginfo( 'name' ); ?></span>
+            <div class="footer-col footer-col-brand">
+                <div class="brand-logo" style="color: #fff; margin-bottom: 0.85rem;">
+                    <span class="brand-icon-mark" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="brand-title"><?php bloginfo( 'name' ); ?></span>
                 </div>
-                <p style="font-size: 0.775rem; color: #a8a29e; line-height: 1.6;">
-                    <?php esc_html_e( 'Curated digital goods for designers, developers, creators, and modern product builders.', 'digital-marketplace' ); ?>
+                <p class="footer-brand-bio">
+                    <?php esc_html_e( 'Curated engineering tools and design systems for software builders, product studios, and independent developers.', 'digital-marketplace' ); ?>
                 </p>
+                <div class="footer-crypto-ribbon">
+                    <span class="crypto-chip-pill">BTC</span>
+                    <span class="crypto-chip-pill">ETH</span>
+                    <span class="crypto-chip-pill">USDT</span>
+                    <span class="crypto-chip-pill">SOL</span>
+                </div>
             </div>
 
             <div class="footer-col">
-                <h5><?php esc_html_e( 'Explore Marketplace', 'digital-marketplace' ); ?></h5>
+                <h5><?php esc_html_e( 'Asset Catalog', 'digital-marketplace' ); ?></h5>
                 <ul class="footer-links">
-                    <li><a href="<?php echo esc_url( home_url( '/products?category=ui-design-kits' ) ); ?>"><?php esc_html_e( 'UI & Design Kits', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/products?category=developer-boilerplates' ) ); ?>"><?php esc_html_e( 'Developer Boilerplates', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/products?category=fonts-typography' ) ); ?>"><?php esc_html_e( 'Fonts & Typography', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/products?category=3d-assets-icons' ) ); ?>"><?php esc_html_e( '3D Assets & Icons', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/products?category=productivity-templates' ) ); ?>"><?php esc_html_e( 'Productivity Templates', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/products?category=ui-design-kits' ) ); ?>"><?php esc_html_e( 'UI & Design Systems', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/products?category=developer-boilerplates' ) ); ?>"><?php esc_html_e( 'Full-Stack Boilerplates', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/products?category=fonts-typography' ) ); ?>"><?php esc_html_e( 'Typography & Typefaces', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/products?category=3d-assets-icons' ) ); ?>"><?php esc_html_e( '3D Assets & Icon Suites', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/products' ) ); ?>"><?php esc_html_e( 'All Marketplace Products', 'digital-marketplace' ); ?></a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h5><?php esc_html_e( 'User Center', 'digital-marketplace' ); ?></h5>
+                <h5><?php esc_html_e( 'Buyer Center', 'digital-marketplace' ); ?></h5>
                 <ul class="footer-links">
-                    <li><a href="<?php echo esc_url( home_url( '/account' ) ); ?>"><?php esc_html_e( 'Order History & Downloads', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/cart' ) ); ?>"><?php esc_html_e( 'Active Shopping Cart', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/checkout' ) ); ?>"><?php esc_html_e( 'Checkout Portal', 'digital-marketplace' ); ?></a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/login' ) ); ?>"><?php esc_html_e( 'Sign In / Register', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/account' ) ); ?>"><?php esc_html_e( 'Order History & Licenses', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/cart' ) ); ?>"><?php esc_html_e( 'Active Cart', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/checkout' ) ); ?>"><?php esc_html_e( 'Crypto Checkout', 'digital-marketplace' ); ?></a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/login' ) ); ?>"><?php esc_html_e( 'Customer Sign In', 'digital-marketplace' ); ?></a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h5><?php esc_html_e( 'Standard License', 'digital-marketplace' ); ?></h5>
-                <p style="font-size: 0.775rem; color: #a8a29e; line-height: 1.6; margin-bottom: 0.75rem;">
-                    <?php esc_html_e( 'All digital marketplace items include royalty-free commercial project use with single or team attribution waivers.', 'digital-marketplace' ); ?>
+                <h5><?php esc_html_e( 'Commercial Rights', 'digital-marketplace' ); ?></h5>
+                <p class="footer-license-summary">
+                    <?php esc_html_e( 'Every purchased item includes a standard royalty-free commercial license. Deploy into unlimited commercial client builds, SaaS products, and personal projects.', 'digital-marketplace' ); ?>
                 </p>
-                <div style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.65rem; background-color: #292524; border-radius: var(--radius-sm); font-size: 0.725rem; color: #34d399;">
-                    <span>✓ Commercial Ready</span>
+                <div class="footer-license-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span><?php esc_html_e( 'Commercial Ready License Included', 'digital-marketplace' ); ?></span>
                 </div>
             </div>
         </div>
@@ -84,11 +111,11 @@
         <!-- Footer Bottom Bar -->
         <div class="footer-bottom">
             <p>&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. <?php esc_html_e( 'All rights reserved.', 'digital-marketplace' ); ?></p>
-            <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+            <div class="footer-bottom-links">
                 <a href="<?php echo esc_url( home_url( '/products' ) ); ?>"><?php esc_html_e( 'Catalog', 'digital-marketplace' ); ?></a>
                 <a href="<?php echo esc_url( home_url( '/cart' ) ); ?>"><?php esc_html_e( 'Cart', 'digital-marketplace' ); ?></a>
                 <a href="<?php echo esc_url( home_url( '/account' ) ); ?>"><?php esc_html_e( 'Dashboard', 'digital-marketplace' ); ?></a>
-                <a href="<?php echo esc_url( home_url( '/terms' ) ); ?>"><?php esc_html_e( 'Terms & Refund Policy', 'digital-marketplace' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/terms' ) ); ?>"><?php esc_html_e( 'Terms & Licensing', 'digital-marketplace' ); ?></a>
             </div>
         </div>
 

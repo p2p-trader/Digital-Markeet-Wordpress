@@ -22,7 +22,9 @@ get_header(); ?>
                     <p class="page-main-sub"><?php esc_html_e( 'Review your selected digital assets before proceeding to peer-to-peer crypto checkout.', 'digital-marketplace' ); ?></p>
                 </div>
                 <div class="page-trust-badge">
-                    <span class="trust-badge-icon">⚡</span>
+                    <svg class="trust-badge-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
                     <span class="trust-badge-text"><?php esc_html_e( 'Instant Crypto Settlement', 'digital-marketplace' ); ?></span>
                 </div>
             </div>
