@@ -48,26 +48,39 @@ wordpress/
 3. **Auto-Install Magic**: Upon theme activation, `functions.php` automatically copies the bundled `digital-marketplace-commerce` folder into `wp-content/plugins/` using the secure WordPress Filesystem API and activates it immediately.
 4. If your server environment prevents automatic file copying (such as strict file ownership or read-only `wp-content/plugins/`), an informational admin notice will appear in `wp-admin` with instructions to copy the folder manually.
 
-### Step 2: Configure Crypto Wallets
+### Step 2: Automatic Page & Homepage Provisioning
+Upon activating the **Digital Marketplace Commerce** plugin (either automatically via the theme or manually in **Plugins**):
+- The plugin checks for existing pages using exact template meta query (`_wp_page_template`), guaranteeing **no duplicate pages** are created even if existing pages were renamed or re-activated.
+- The following required pages are automatically created and configured:
+  1. **Login** (`page-login.php` template)
+  2. **Cart** (`page-cart.php` template, pre-populated with `[dmc_cart]`)
+  3. **Checkout** (`page-checkout.php` template, pre-populated with `[dmc_checkout]`)
+  4. **My Account** (`page-account.php` template)
+  5. **Terms & Refund Policy** (`page-legal.php` template)
+- If the site does not already have a static front page set, a **Home** page is created and configured as the site's static front page (`show_on_front = page`).
+- All created page IDs are cached in the `dmc_setup_page_ids` option for ultra-fast checks on future activations.
+- A one-time, dismissible administrative notice appears in `wp-admin` summarizing exactly which pages were created.
+
+### Step 3: Configure Crypto Wallets
 1. Go to **Settings > Digital Marketplace** in your WordPress admin menu.
 2. Enter your real cryptocurrency wallet addresses:
    - **Bitcoin (BTC)** address
    - **Ethereum (ETH)** address
    - **Tether (USDT)** address
-3. Customize the confirmation email template text if desired.
-4. Set the stale order threshold (default: 24 hours).
-5. Click **Save Commerce Settings**.
+3. Enter your administrator notification email (if different from site admin).
+4. Set max downloads per token limit (or leave 0 for unlimited).
+5. Set the stale order threshold (default: 24 hours).
+6. Click **Save Commerce Settings**.
 
-### Step 4: Create Core Pages
-Create the following pages under **Pages > Add New**:
-- **Cart**: Assign the "Cart Page" template. (Renders `[dmc_cart]` with dynamic line items).
-- **Checkout**: Assign the "Checkout Page" template. (Renders `[dmc_checkout]` with crypto payment flow and confirmation).
-- **My Account**: Assign the "Account Dashboard Page" template. (Queries `dmc_order` posts for the logged-in customer).
-- **Sign In**: Assign the "Login / Signup Page" template. (Uses `wp_login_form()`).
+### Step 4: Adding Products & Uploading Digital Files
+1. Go to **Products > Add New** in WordPress.
+2. Enter product title, description, price, and category.
+3. In the **Product Digital Files & Assets** meta box, upload the downloadable `.zip` or file archive.
+4. Publish the product. Once purchased and marked **Completed**, secure cryptographic tokens and streaming URLs are generated automatically for the buyer.
 
 ### Step 5: Managing Orders in WP-Admin
 1. When a buyer submits an order, it is stored in `wp-admin` under **Orders (DMC)**.
 2. The order begins with status **Awaiting Payment**.
 3. View the single order screen to inspect the customer name, email, items purchased, and crypto address provided.
-4. After verifying the blockchain transaction in your wallet, simply change the status dropdown to **Paid - Processing** or **Completed** and click **Update**.
-5. The Orders list table includes a status filter dropdown and an informational **May Be Stale** badge if an unpaid order exceeds your configured hours.
+4. After verifying the blockchain transaction in your wallet, simply change the status dropdown to **Completed** and click **Update**.
+5. Upon marking as **Completed**, unique secure download links are generated for each purchased item and emailed to the buyer. If an order is **Cancelled**, download tokens are automatically revoked.
