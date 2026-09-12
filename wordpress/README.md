@@ -1,63 +1,75 @@
-# Digital Marketplace WordPress Theme
+# Digital Marketplace WordPress Theme & Commerce Engine
 
-A modern, high-performance WordPress theme for digital assets, UI kits, code boilerplates, fonts, and creative resources. Designed to mirror the React/Next.js Digital Marketplace application with semantic HTML5, WordPress core authentication, dynamic custom post types, and full WooCommerce compatibility.
+A modern, high-performance WordPress theme and standalone e-commerce plugin for digital assets, UI kits, code boilerplates, fonts, and creative resources. Designed to mirror the React/Next.js Digital Marketplace application with semantic HTML5, WordPress core authentication, dynamic custom post types, and a self-contained cryptocurrency commerce plugin that works **without** requiring WooCommerce or any third-party plugins.
 
 ---
 
-## 📁 Theme Directory Structure
+## 📁 Project Directory Structure
 
 ```text
 wordpress/
-├── style.css               # Core theme definition and required WordPress header
-├── functions.php           # Theme setup, assets enqueueing, CPT registration, meta boxes
-├── header.php              # Global navigation, search bar, dynamic cart badge, user status
-├── footer.php              # Value propositions, category links, trust badges, wp_footer()
-├── front-page.php          # Home page with hero, categories, dynamic featured products
-├── archive-product.php     # Products catalog with categories, search, and pagination
-├── single-product.php      # Product detail page with gallery thumbnails, price, specs, buy actions
-├── page-cart.php           # Cart template with [woocommerce_cart] shortcode support
-├── page-checkout.php       # Checkout template with [woocommerce_checkout] shortcode support
-├── page-login.php          # Authentication template powered by wp_login_form()
-├── page-account.php        # Customer dashboard with order history, downloads, and profile tabs
-├── index.php               # Fallback blog/post archive template
-└── assets/
-    ├── css/
-    │   └── theme.css       # Clean styling preserving the exact React/Tailwind visual design
-    └── js/
-        └── marketplace.js  # Client interactivity: gallery previews, quantity steppers, coupons
+├── style.css                          # Core theme definition and required WordPress header
+├── functions.php                      # Theme setup, assets enqueueing, CPT registration, meta boxes
+├── header.php                         # Global navigation, search bar, dynamic cart badge, user status
+├── footer.php                         # Value propositions, category links, trust badges, wp_footer()
+├── front-page.php                     # Home page with hero, categories, dynamic featured products
+├── archive-product.php                # Products catalog with categories, search, and pagination
+├── single-product.php                 # Product detail page with gallery thumbnails, price, specs, DMC buy actions
+├── page-cart.php                      # Cart template executing [dmc_cart] shortcode dynamically
+├── page-checkout.php                  # Checkout template executing [dmc_checkout] shortcode dynamically
+├── page-login.php                     # Authentication template powered by wp_login_form()
+├── page-account.php                   # Customer dashboard querying real dmc_order records
+├── index.php                          # Fallback blog/post archive template
+├── assets/
+│   ├── css/theme.css                  # Clean styling preserving the exact React/Tailwind visual design
+│   └── js/marketplace.js             # Client interactivity: gallery previews, mobile nav
+└── digital-marketplace-commerce/      # Standalone E-Commerce Plugin (NO WOOCOMMERCE REQUIRED!)
+    ├── digital-marketplace-commerce.php  # Main plugin header & loader
+    ├── includes/
+    │   ├── class-dmc-cart.php         # Tamper-resistant signed cookie cart manager
+    │   ├── class-dmc-post-type.php    # dmc_order CPT, admin columns, metabox, status filter
+    │   ├── class-dmc-ajax.php         # AJAX handlers for add, update qty, remove item
+    │   ├── class-dmc-checkout.php     # [dmc_cart], [dmc_checkout], order creation & wp_mail
+    │   └── class-dmc-settings.php     # Settings > Digital Marketplace (wallets, email, stale flag)
+    └── assets/
+        ├── js/dmc-commerce.js         # Client AJAX cart interactions and badge updates
+        └── css/dmc-commerce.css       # Clean component styling
 ```
 
 ---
 
 ## 🚀 Installation & Setup
 
-1. **Copy the theme folder**:
-   Copy the `wordpress` folder into your WordPress installation at:
+### Step 1: Install the Theme
+1. Copy the `wordpress` folder (excluding the plugin folder or leaving it intact) into your WordPress installation at:
    `wp-content/themes/digital-marketplace/`
+2. In your WordPress Admin Dashboard, go to **Appearance > Themes** and click **Activate** on **Digital Marketplace Theme**.
 
-2. **Activate the theme**:
-   In your WordPress Admin Dashboard, navigate to **Appearance > Themes** and click **Activate** on **Digital Marketplace Theme**.
+### Step 2: Install the Standalone Commerce Plugin
+1. Move the `digital-marketplace-commerce` folder into:
+   `wp-content/plugins/digital-marketplace-commerce/`
+2. In your WordPress Admin Dashboard, go to **Plugins > Installed Plugins** and click **Activate** on **Digital Marketplace Commerce**.
 
-3. **Set Up Core Pages**:
-   Create the following pages in **Pages > Add New**:
-   - **Cart**: Assign the "Cart Page" template (or use WooCommerce default).
-   - **Checkout**: Assign the "Checkout Page" template (or use WooCommerce default).
-   - **My Account**: Assign the "Account Dashboard Page" template.
-   - **Sign In**: Assign the "Login / Signup Page" template.
+### Step 3: Configure Crypto Wallets
+1. Go to **Settings > Digital Marketplace** in your WordPress admin menu.
+2. Enter your real cryptocurrency wallet addresses:
+   - **Bitcoin (BTC)** address
+   - **Ethereum (ETH)** address
+   - **Tether (USDT)** address
+3. Customize the confirmation email template text if desired.
+4. Set the stale order threshold (default: 24 hours).
+5. Click **Save Commerce Settings**.
 
-4. **Set Front Page**:
-   Go to **Settings > Reading** and choose **A static page**, selecting your Home page. `front-page.php` will automatically render the home experience.
+### Step 4: Create Core Pages
+Create the following pages under **Pages > Add New**:
+- **Cart**: Assign the "Cart Page" template. (Renders `[dmc_cart]` with dynamic line items).
+- **Checkout**: Assign the "Checkout Page" template. (Renders `[dmc_checkout]` with crypto payment flow and confirmation).
+- **My Account**: Assign the "Account Dashboard Page" template. (Queries `dmc_order` posts for the logged-in customer).
+- **Sign In**: Assign the "Login / Signup Page" template. (Uses `wp_login_form()`).
 
----
-
-## 🛒 WooCommerce Integration Guide
-
-This theme is intentionally engineered with a hybrid architecture:
-- **Standalone Mode (No plugins required)**: Uses the built-in `product` Custom Post Type with native meta boxes (Price, Format, Size, Featured flag, Reviews), mock interactive cart, and WordPress core authentication.
-- **Production Commerce Mode (Recommended)**: Install and activate the official **WooCommerce** plugin.
-
-When WooCommerce is activated:
-1. `page-cart.php` automatically renders WooCommerce's secure server-side session cart via `[woocommerce_cart]`.
-2. `page-checkout.php` automatically mounts PCI-compliant payment gateways (Stripe, PayPal) via `[woocommerce_checkout]`.
-3. `single-product.php` hooks into WooCommerce's `woocommerce_template_single_add_to_cart()`.
-4. `page-account.php` dynamically queries orders via `wc_get_orders()` and links directly to customer digital downloads and order receipts.
+### Step 5: Managing Orders in WP-Admin
+1. When a buyer submits an order, it is stored in `wp-admin` under **Orders (DMC)**.
+2. The order begins with status **Awaiting Payment**.
+3. View the single order screen to inspect the customer name, email, items purchased, and crypto address provided.
+4. After verifying the blockchain transaction in your wallet, simply change the status dropdown to **Paid - Processing** or **Completed** and click **Update**.
+5. The Orders list table includes a status filter dropdown and an informational **May Be Stale** badge if an unpaid order exceeds your configured hours.

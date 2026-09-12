@@ -64,9 +64,11 @@
 
                 <!-- Cart Button -->
                 <?php 
-                    $cart_url = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart' );
+                    $cart_url = home_url( '/cart' );
                     $cart_count = 0;
-                    if ( function_exists( 'WC' ) && WC()->cart ) {
+                    if ( class_exists( 'DMC_Cart' ) ) {
+                        $cart_count = DMC_Cart::get_item_count();
+                    } elseif ( function_exists( 'WC' ) && WC()->cart ) {
                         $cart_count = WC()->cart->get_cart_contents_count();
                     }
                 ?>

@@ -93,6 +93,20 @@ get_header(); ?>
                     </div>
 
                     <?php
+                    // Query Digital Marketplace Commerce orders for current user
+                    $dmc_orders_query = new WP_Query( array(
+                        'post_type'      => 'dmc_order',
+                        'post_status'    => 'any',
+                        'posts_per_page' => 15,
+                        'meta_query'     => array(
+                            array(
+                                'key'     => '_dmc_customer_email',
+                                'value'   => $current_user->user_email,
+                                'compare' => '=',
+                            ),
+                        ),
+                    ) );
+
                     // Check if WooCommerce exists to query dynamic customer orders
                     if ( function_exists( 'wc_get_orders' ) ) {
                         $customer_orders = wc_get_orders( array(
@@ -103,7 +117,74 @@ get_header(); ?>
                         $customer_orders = array();
                     }
 
-                    if ( ! empty( $customer_orders ) ) : ?>
+                    if ( $dmc_orders_query->have_posts() ) : ?>
+                        <div style="overflow-x: auto;">
+                            <table class="order-history-table">
+                                <thead>
+                                    <tr>
+                                        <th><?php esc_html_e( 'Order ID', 'digital-marketplace' ); ?></th>
+                                        <th><?php esc_html_e( 'Date', 'digital-marketplace' ); ?></th>
+                                        <th><?php esc_html_e( 'Purchased Items', 'digital-marketplace' ); ?></th>
+                                        <th><?php esc_html_e( 'Status', 'digital-marketplace' ); ?></th>
+                                        <th><?php esc_html_e( 'Total', 'digital-marketplace' ); ?></th>
+                                        <th><?php esc_html_e( 'Payment / Action', 'digital-marketplace' ); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while ( $dmc_orders_query->have_posts() ) : $dmc_orders_query->the_post(); 
+                                        $order_id = get_the_ID();
+                                        $items = get_post_meta( $order_id, '_dmc_order_items', true );
+                                        $total = floatval( get_post_meta( $order_id, '_dmc_order_total', true ) );
+                                        $status = get_post_meta( $order_id, '_dmc_order_status', true ) ?: 'Awaiting Payment';
+                                        $coin = get_post_meta( $order_id, '_dmc_crypto_coin', true ) ?: 'Crypto';
+                                        $order_key = get_post_meta( $order_id, '_dmc_order_key', true );
+                                        $confirm_url = add_query_arg( array( 'dmc_order_id' => $order_id, 'order_key' => $order_key ), home_url( '/checkout' ) );
+
+                                        $badge_style = 'background:#fef3c7; color:#92400e;';
+                                        if ( $status === 'Completed' ) {
+                                            $badge_style = 'background:#d1fae5; color:#065f46;';
+                                        } elseif ( $status === 'Paid - Processing' ) {
+                                            $badge_style = 'background:#dbeafe; color:#1e40af;';
+                                        } elseif ( $status === 'Cancelled' ) {
+                                            $badge_style = 'background:#fee2e2; color:#991b1b;';
+                                        }
+                                    ?>
+                                        <tr>
+                                            <td style="font-weight: 700; font-family: monospace;">#<?php echo esc_html( $order_id ); ?></td>
+                                            <td><?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></td>
+                                            <td>
+                                                <?php if ( is_array( $items ) && ! empty( $items ) ) : ?>
+                                                    <span style="font-weight: 700;"><?php echo esc_html( $items[0]['title'] ?? 'Product' ); ?></span>
+                                                    <?php if ( count( $items ) > 1 ) : ?>
+                                                        <p style="font-size: 0.75rem; color: var(--text-muted);">+<?php echo esc_html( count( $items ) - 1 ); ?> more items</p>
+                                                    <?php endif; ?>
+                                                <?php else : ?>
+                                                    <span>Digital Goods License</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge" style="<?php echo esc_attr( $badge_style ); ?>">
+                                                    <?php echo esc_html( $status ); ?>
+                                                </span>
+                                            </td>
+                                            <td style="font-weight: 900;">$<?php echo esc_html( number_format( $total, 2 ) ); ?></td>
+                                            <td>
+                                                <?php if ( $status === 'Completed' ) : ?>
+                                                    <a href="#" class="btn btn-secondary btn-sm" onclick="alert('Instant asset download active for Order #<?php echo esc_js( $order_id ); ?>'); return false;">
+                                                        ⬇️ <?php esc_html_e( 'Download', 'digital-marketplace' ); ?>
+                                                    </a>
+                                                <?php else : ?>
+                                                    <a href="<?php echo esc_url( $confirm_url ); ?>" class="btn btn-primary btn-sm">
+                                                        🪙 <?php esc_html_e( 'Instructions', 'digital-marketplace' ); ?>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; wp_reset_postdata(); ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php elseif ( ! empty( $customer_orders ) ) : ?>
                         <div style="overflow-x: auto;">
                             <table class="order-history-table">
                                 <thead>

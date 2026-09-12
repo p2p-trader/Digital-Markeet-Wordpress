@@ -131,20 +131,14 @@ get_header(); ?>
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
+                    <!-- Action Buttons with DMC AJAX Hooks -->
                     <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
-                        <?php if ( function_exists( 'woocommerce_template_single_add_to_cart' ) ) : ?>
-                            <!-- WooCommerce Native Button Integration -->
-                            <?php woocommerce_template_single_add_to_cart(); ?>
-                        <?php else : ?>
-                            <!-- Standalone WordPress Add to Cart and Buy Now buttons -->
-                            <a href="<?php echo esc_url( add_query_arg( 'add_product_id', $product_id, $cart_page_url ) ); ?>" class="btn btn-primary btn-block btn-lg">
-                                🛍️ <?php esc_html_e( 'Add to Cart', 'digital-marketplace' ); ?>
-                            </a>
-                            <a href="<?php echo esc_url( add_query_arg( 'direct_buy_id', $product_id, $checkout_url ) ); ?>" class="btn btn-accent btn-block btn-lg">
-                                ⚡ <?php esc_html_e( 'Buy Now', 'digital-marketplace' ); ?>
-                            </a>
-                        <?php endif; ?>
+                        <button type="button" class="btn btn-primary btn-block btn-lg dmc-add-to-cart-btn" data-product-id="<?php echo esc_attr( $product_id ); ?>">
+                            🛍️ <?php esc_html_e( 'Add to Cart', 'digital-marketplace' ); ?>
+                        </button>
+                        <button type="button" class="btn btn-accent btn-block btn-lg dmc-buy-now-btn" data-product-id="<?php echo esc_attr( $product_id ); ?>">
+                            ⚡ <?php esc_html_e( 'Buy Now', 'digital-marketplace' ); ?>
+                        </button>
                     </div>
 
                     <!-- Verified Features Checklist -->
