@@ -26,7 +26,10 @@ class DMC_Post_Type {
         add_action( 'restrict_manage_posts', array( __CLASS__, 'render_status_filter' ) );
         add_action( 'pre_get_posts', array( __CLASS__, 'filter_orders_by_status' ) );
         add_action( 'add_meta_boxes', array( __CLASS__, 'add_order_metaboxes' ) );
+        add_action( 'add_meta_boxes', array( __CLASS__, 'add_product_metaboxes' ) );
         add_action( 'save_post_dmc_order', array( __CLASS__, 'save_order_meta' ) );
+        add_action( 'save_post_product', array( __CLASS__, 'save_product_download_meta' ) );
+        add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_product_scripts' ) );
         add_action( 'admin_head', array( __CLASS__, 'admin_custom_styles' ) );
     }
 
@@ -306,24 +309,93 @@ class DMC_Post_Type {
             <table class="widefat fixed striped" style="margin-bottom: 16px;">
                 <thead>
                     <tr>
-                        <th style="width: 50%;"><?php esc_html_e( 'Product Name', 'digital-marketplace-commerce' ); ?></th>
-                        <th style="width: 15%;"><?php esc_html_e( 'Unit Price', 'digital-marketplace-commerce' ); ?></th>
-                        <th style="width: 15%;"><?php esc_html_e( 'Quantity', 'digital-marketplace-commerce' ); ?></th>
-                        <th style="width: 20%; text-align: right;"><?php esc_html_e( 'Line Total', 'digital-marketplace-commerce' ); ?></th>
+                        <th style="width: 32%;"><?php esc_html_e( 'Product Name', 'digital-marketplace-commerce' ); ?></th>
+                        <th style="width: 28%;"><?php esc_html_e( 'Download File Attachment', 'digital-marketplace-commerce' ); ?></th>
+                        <th style="width: 12%;"><?php esc_html_e( 'Unit Price', 'digital-marketplace-commerce' ); ?></th>
+                        <th style="width: 10%;"><?php esc_html_e( 'Quantity', 'digital-marketplace-commerce' ); ?></th>
+                        <th style="width: 18%; text-align: right;"><?php esc_html_e( 'Line Total', 'digital-marketplace-commerce' ); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if ( is_array( $items ) && ! empty( $items ) ) : ?>
                         <?php foreach ( $items as $item ) : 
-                            $price = floatval( $item['price'] ?? 0 );
-                            $qty   = intval( $item['quantity'] ?? 1 );
+                            $pid        = ! empty( $item['id'] ) ? absint( $item['id'] ) : 0;
+                            $price      = floatval( $item['price'] ?? 0 );
+                            $qty        = intval( $item['quantity'] ?? 1 );
                             $line_total = round( $price * $qty, 2 );
+
+                            // File attachment check
+                            $file_info  = $pid && class_exists( 'DMC_Downloads' ) ? DMC_Downloads::get_product_file_info( $pid ) : null;
+                            $has_file   = $pid && class_exists( 'DMC_Downloads' ) ? DMC_Downloads::has_download_file( $pid ) : false;
                         ?>
                             <tr>
                                 <td>
                                     <strong><?php echo esc_html( $item['title'] ?? 'Product' ); ?></strong>
-                                    <?php if ( ! empty( $item['id'] ) ) : ?>
-                                        <small style="color: #64748b; margin-left: 6px;">(ID: #<?php echo esc_html( $item['id'] ); ?>)</small>
+                                    <?php if ( $pid ) : ?>
+                                        <small style="color: #64748b; margin-left: 6px;">(ID: #<?php echo esc_html( $pid ); ?>)</small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ( $has_file && $file_info ) : ?>
+                                        <div style="display: inline-flex; align-items: center; gap: 5px; color: #059669; font-weight: 700; font-size: 12px;">
+                                            <span>✅</span>
+                                            <span><?php esc_html_e( 'File Attached', 'digital-marketplace-commerce' ); ?></span>
+                                        </div>
+                                        <div style="font-size: 11px; color: #475569; font-family: monospace; word-break: break-all; margin-top: 2px;">
+                                            <?php echo esc_html( $file_info['filename'] ); ?>
+                                            <?php if ( ! empty( $file_info['filesize'] ) ) : ?>
+                                                <span style="color: #94a3b8;">(<?php echo esc_html( $file_info['filesize'] ); ?>)</span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ( $order_status === self::STATUS_COMPLETED && class_exists( 'DMC_Downloads' ) ) : 
+                                            $dl_url = DMC_Downloads::get_download_url( $post->ID, $pid );
+                                            $stats  = DMC_Downloads::get_token_stats( $post->ID, $pid );
+                                            if ( $dl_url ) : ?>
+                                                <a href="<?php echo esc_url( $dl_url ); ?>" target="_blank" style="display: inline-block; margin-top: 4px; font-size: 11px; color: #2563eb; text-decoration: underline;">
+                                                    ⬇️ <?php esc_html_e( 'Test Customer Download Link', 'digital-marketplace-commerce' ); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <div style="margin-top: 6px; padding: 6px 8px; background: #f1f5f9; border-radius: 4px; font-size: 11px; color: #334155;">
+                                                <div>
+                                                    <strong><?php esc_html_e( 'Downloads:', 'digital-marketplace-commerce' ); ?></strong>
+                                                    <?php 
+                                                    if ( ! empty( $stats['max'] ) && $stats['max'] > 0 ) {
+                                                        printf( esc_html__( '%1$d of %2$d max used', 'digital-marketplace-commerce' ), intval( $stats['count'] ), intval( $stats['max'] ) );
+                                                        if ( $stats['count'] >= $stats['max'] ) {
+                                                            echo ' <span style="color:#ef4444; font-weight:700;">(' . esc_html__( 'Limit reached', 'digital-marketplace-commerce' ) . ')</span>';
+                                                        }
+                                                    } else {
+                                                        printf( esc_html__( '%d times (unlimited)', 'digital-marketplace-commerce' ), intval( $stats['count'] ) );
+                                                    }
+                                                    ?>
+                                                </div>
+                                                <?php if ( ! empty( $stats['last_download'] ) ) : ?>
+                                                    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">
+                                                        <?php printf( esc_html__( 'Last accessed: %s', 'digital-marketplace-commerce' ), esc_html( $stats['last_download'] ) ); ?>
+                                                    </div>
+                                                <?php else : ?>
+                                                    <div style="color: #94a3b8; font-size: 10px; margin-top: 2px;">
+                                                        <?php esc_html_e( 'Not yet downloaded by customer', 'digital-marketplace-commerce' ); ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php elseif ( $order_status === self::STATUS_CANCELLED ) : ?>
+                                            <div style="margin-top: 4px; display: inline-block; padding: 2px 6px; background: #fee2e2; color: #b91c1c; font-size: 11px; font-weight: 700; border-radius: 4px;">
+                                                ❌ <?php esc_html_e( 'Tokens Revoked (Cancelled)', 'digital-marketplace-commerce' ); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php elseif ( $pid ) : ?>
+                                        <div style="display: inline-flex; align-items: center; gap: 5px; color: #dc2626; font-weight: 700; font-size: 12px;">
+                                            <span>❌</span>
+                                            <span><?php esc_html_e( 'No File Attached', 'digital-marketplace-commerce' ); ?></span>
+                                        </div>
+                                        <div style="margin-top: 3px;">
+                                            <a href="<?php echo esc_url( get_edit_post_link( $pid ) ); ?>" target="_blank" style="font-size: 11px; color: #2563eb; text-decoration: underline; font-weight: 600;">
+                                                ⚠️ <?php esc_html_e( 'Attach downloadable file to product →', 'digital-marketplace-commerce' ); ?>
+                                            </a>
+                                        </div>
+                                    <?php else : ?>
+                                        <span style="color: #94a3b8; font-size: 11px;"><?php esc_html_e( 'Product ID unavailable', 'digital-marketplace-commerce' ); ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td>$<?php echo esc_html( number_format( $price, 2 ) ); ?></td>
@@ -333,13 +405,13 @@ class DMC_Post_Type {
                         <?php endforeach; ?>
                     <?php else : ?>
                         <tr>
-                            <td colspan="4"><?php esc_html_e( 'No line items recorded.', 'digital-marketplace-commerce' ); ?></td>
+                            <td colspan="5"><?php esc_html_e( 'No line items recorded.', 'digital-marketplace-commerce' ); ?></td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="3" style="text-align: right; font-weight: 800; font-size: 14px;"><?php esc_html_e( 'Order Total:', 'digital-marketplace-commerce' ); ?></th>
+                        <th colspan="4" style="text-align: right; font-weight: 800; font-size: 14px;"><?php esc_html_e( 'Order Total:', 'digital-marketplace-commerce' ); ?></th>
                         <th style="text-align: right; font-weight: 900; font-size: 16px; color: #0f172a;">
                             $<?php echo esc_html( number_format( $order_total, 2 ) ); ?>
                         </th>
@@ -348,10 +420,178 @@ class DMC_Post_Type {
             </table>
 
             <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <?php esc_html_e( 'Tip: Click "Update" on the right sidebar to save your changes to the Order Status.', 'digital-marketplace-commerce' ); ?>
+                <?php esc_html_e( 'Tip: Click "Update" on the right sidebar to save changes to the Order Status. Once set to "Completed", secure download tokens are automatically generated.', 'digital-marketplace-commerce' ); ?>
             </p>
         </div>
         <?php
+    }
+
+    /**
+     * Enqueue media uploader scripts on product edit screens.
+     */
+    public static function enqueue_admin_product_scripts( $hook ) {
+        if ( in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) {
+            $screen = get_current_screen();
+            if ( $screen && $screen->post_type === 'product' ) {
+                wp_enqueue_media();
+            }
+        }
+    }
+
+    /**
+     * Register downloadable file metabox on 'product' CPT.
+     */
+    public static function add_product_metaboxes() {
+        add_meta_box(
+            'dmc_product_download_metabox',
+            __( 'Downloadable Digital File (DMC)', 'digital-marketplace-commerce' ),
+            array( __CLASS__, 'render_product_download_metabox' ),
+            'product',
+            'normal',
+            'high'
+        );
+    }
+
+    /**
+     * Render the product downloadable file metabox in wp-admin.
+     */
+    public static function render_product_download_metabox( $post ) {
+        wp_nonce_field( 'dmc_save_product_download_action', 'dmc_product_download_nonce' );
+
+        $file_id   = absint( get_post_meta( $post->ID, '_product_download_file_id', true ) );
+        $file_info = class_exists( 'DMC_Downloads' ) ? DMC_Downloads::get_product_file_info( $post->ID ) : null;
+        $has_file  = ! empty( $file_info['exists'] );
+        ?>
+        <div style="padding: 10px 0;">
+            <p style="font-size: 13px; color: #475569; margin-top: 0; margin-bottom: 12px; line-height: 1.5;">
+                <?php esc_html_e( 'Attach the digital product archive (ZIP, DMG, PDF, or codebase) that buyers receive upon order completion. The physical server file path is never exposed publicly; customers receive protected, single-order streaming links once their order is marked "Completed".', 'digital-marketplace-commerce' ); ?>
+            </p>
+
+            <input type="hidden" id="dmc_product_download_file_id" name="_product_download_file_id" value="<?php echo esc_attr( $file_id ?: '' ); ?>" />
+
+            <!-- File Details Card -->
+            <div id="dmc_file_details_card" style="padding: 14px 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 14px; <?php echo $file_id ? '' : 'display: none;'; ?>">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 28px;">📦</span>
+                        <div>
+                            <strong id="dmc_file_name_display" style="font-size: 14px; color: #0f172a; word-break: break-all;">
+                                <?php echo esc_html( $file_info['filename'] ?? '' ); ?>
+                            </strong>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
+                                <?php esc_html_e( 'Media Attachment ID:', 'digital-marketplace-commerce' ); ?> #<span id="dmc_file_id_display"><?php echo esc_html( $file_id ); ?></span>
+                                <span id="dmc_file_size_container" style="<?php echo ! empty( $file_info['filesize'] ) ? '' : 'display: none;'; ?>">
+                                    • <?php esc_html_e( 'Size:', 'digital-marketplace-commerce' ); ?> <span id="dmc_file_size_display"><?php echo esc_html( $file_info['filesize'] ?? '' ); ?></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; border-radius: 9999px;">
+                        ✓ <?php esc_html_e( 'Attached & Ready for Buyers', 'digital-marketplace-commerce' ); ?>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Empty File Warning -->
+            <div id="dmc_file_empty_warning" style="padding: 12px 14px; background: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin-bottom: 14px; color: #92400e; font-size: 13px; <?php echo $file_id ? 'display: none;' : ''; ?>">
+                <strong>⚠️ <?php esc_html_e( 'No downloadable file currently attached.', 'digital-marketplace-commerce' ); ?></strong>
+                <p style="margin: 4px 0 0; font-size: 12px;">
+                    <?php esc_html_e( 'If a customer purchases this product, they will not have a file to download until you upload and attach a file here.', 'digital-marketplace-commerce' ); ?>
+                </p>
+            </div>
+
+            <!-- Upload / Select Controls -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button type="button" id="dmc_upload_file_button" class="button button-primary button-large">
+                    <?php echo $file_id ? esc_html__( 'Change / Replace File', 'digital-marketplace-commerce' ) : esc_html__( 'Upload / Select Downloadable File', 'digital-marketplace-commerce' ); ?>
+                </button>
+                <button type="button" id="dmc_remove_file_button" class="button button-large" style="<?php echo $file_id ? '' : 'display: none;'; ?> color: #dc2626; border-color: #fca5a5;">
+                    <?php esc_html_e( 'Remove File', 'digital-marketplace-commerce' ); ?>
+                </button>
+            </div>
+        </div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            var fileFrame;
+
+            $('#dmc_upload_file_button').on('click', function(e) {
+                e.preventDefault();
+
+                if (fileFrame) {
+                    fileFrame.open();
+                    return;
+                }
+
+                fileFrame = wp.media({
+                    title: '<?php echo esc_js( __( 'Select or Upload Product Download File', 'digital-marketplace-commerce' ) ); ?>',
+                    button: {
+                        text: '<?php echo esc_js( __( 'Attach File to Product', 'digital-marketplace-commerce' ) ); ?>'
+                    },
+                    multiple: false
+                });
+
+                fileFrame.on('select', function() {
+                    var attachment = fileFrame.state().get('selection').first().toJSON();
+                    $('#dmc_product_download_file_id').val(attachment.id);
+                    $('#dmc_file_id_display').text(attachment.id);
+                    $('#dmc_file_name_display').text(attachment.filename || attachment.title);
+                    
+                    if (attachment.filesizeHumanReadable) {
+                        $('#dmc_file_size_display').text(attachment.filesizeHumanReadable);
+                        $('#dmc_file_size_container').show();
+                    } else {
+                        $('#dmc_file_size_container').hide();
+                    }
+
+                    $('#dmc_file_details_card').show();
+                    $('#dmc_file_empty_warning').hide();
+                    $('#dmc_remove_file_button').show();
+                    $('#dmc_upload_file_button').text('<?php echo esc_js( __( 'Change / Replace File', 'digital-marketplace-commerce' ) ); ?>');
+                });
+
+                fileFrame.open();
+            });
+
+            $('#dmc_remove_file_button').on('click', function(e) {
+                e.preventDefault();
+                if (confirm('<?php echo esc_js( __( 'Are you sure you want to detach this downloadable file from the product?', 'digital-marketplace-commerce' ) ); ?>')) {
+                    $('#dmc_product_download_file_id').val('');
+                    $('#dmc_file_details_card').hide();
+                    $('#dmc_file_empty_warning').show();
+                    $('#dmc_remove_file_button').hide();
+                    $('#dmc_upload_file_button').text('<?php echo esc_js( __( 'Upload / Select Downloadable File', 'digital-marketplace-commerce' ) ); ?>');
+                }
+            });
+        });
+        </script>
+        <?php
+    }
+
+    /**
+     * Save product downloadable file ID meta when product post is saved.
+     */
+    public static function save_product_download_meta( $post_id ) {
+        if ( ! isset( $_POST['dmc_product_download_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dmc_product_download_nonce'] ) ), 'dmc_save_product_download_action' ) ) {
+            return;
+        }
+
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+            return;
+        }
+
+        if ( ! current_user_can( 'edit_post', $post_id ) ) {
+            return;
+        }
+
+        if ( isset( $_POST['_product_download_file_id'] ) ) {
+            $file_id = absint( $_POST['_product_download_file_id'] );
+            if ( $file_id > 0 ) {
+                update_post_meta( $post_id, '_product_download_file_id', $file_id );
+            } else {
+                delete_post_meta( $post_id, '_product_download_file_id' );
+            }
+        }
     }
 
     /**
@@ -374,7 +614,23 @@ class DMC_Post_Type {
             $new_status = sanitize_text_field( wp_unslash( $_POST['dmc_order_status'] ) );
             $valid_statuses = self::get_statuses();
             if ( array_key_exists( $new_status, $valid_statuses ) ) {
+                $old_status = get_post_meta( $post_id, '_dmc_order_status', true ) ?: self::STATUS_AWAITING_PAYMENT;
                 update_post_meta( $post_id, '_dmc_order_status', $new_status );
+
+                // If marked "Completed", generate unique download tokens for digital delivery
+                if ( $new_status === self::STATUS_COMPLETED && class_exists( 'DMC_Downloads' ) ) {
+                    DMC_Downloads::generate_order_tokens( $post_id );
+                }
+
+                // If marked "Cancelled", invalidate tokens and email customer
+                if ( $new_status === self::STATUS_CANCELLED && $old_status !== self::STATUS_CANCELLED ) {
+                    if ( class_exists( 'DMC_Downloads' ) ) {
+                        DMC_Downloads::invalidate_order_tokens( $post_id );
+                    }
+                    if ( class_exists( 'DMC_Checkout' ) ) {
+                        DMC_Checkout::send_order_cancellation_email( $post_id );
+                    }
+                }
             }
         }
     }

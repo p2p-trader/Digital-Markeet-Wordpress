@@ -273,3 +273,201 @@ function digital_marketplace_get_price( $post_id ) {
     $price = get_post_meta( $post_id, '_product_price', true );
     return $price ? $price : '49.00';
 }
+
+/**
+ * =========================================================================
+ * BUNDLED COMMERCE PLUGIN AUTO-INSTALLER & PERSISTENCE
+ * =========================================================================
+ */
+
+/**
+ * Automatically copies and activates the bundled Digital Marketplace Commerce
+ * plugin when this theme is activated.
+ */
+function digital_marketplace_auto_install_bundled_plugin() {
+    if ( ! function_exists( 'is_plugin_active' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+
+    $plugin_slug = 'digital-marketplace-commerce';
+    $plugin_file = 'digital-marketplace-commerce/digital-marketplace-commerce.php';
+
+    // 1. If plugin is already active, nothing to do.
+    if ( is_plugin_active( $plugin_file ) ) {
+        return;
+    }
+
+    $source_dir = get_template_directory() . '/' . $plugin_slug;
+    $source_file = $source_dir . '/digital-marketplace-commerce.php';
+
+    // Verify bundled plugin exists inside the theme
+    if ( ! file_exists( $source_file ) ) {
+        set_transient( 'dmc_install_error', __( 'Bundled plugin directory not found in theme.', 'digital-marketplace' ), DAY_IN_SECONDS );
+        return;
+    }
+
+    $dest_dir = WP_PLUGIN_DIR . '/' . $plugin_slug;
+    $dest_file = WP_PLUGIN_DIR . '/' . $plugin_file;
+
+    // 2. If not already present in wp-content/plugins/, copy using WP_Filesystem API
+    if ( ! file_exists( $dest_file ) ) {
+        if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        $url   = wp_nonce_url( admin_url( 'themes.php' ) );
+        $creds = request_filesystem_credentials( $url, '', false, false, array() );
+
+        // If credentials cannot be acquired or filesystem initialization fails, gracefully bail
+        if ( false === $creds || ! WP_Filesystem( $creds ) ) {
+            set_transient( 'dmc_install_error', __( 'WordPress Filesystem credentials unavailable or access denied.', 'digital-marketplace' ), DAY_IN_SECONDS );
+            return;
+        }
+
+        global $wp_filesystem;
+
+        if ( ! $wp_filesystem ) {
+            set_transient( 'dmc_install_error', __( 'WordPress Filesystem API could not be initialized.', 'digital-marketplace' ), DAY_IN_SECONDS );
+            return;
+        }
+
+        // Ensure destination folder exists
+        if ( ! $wp_filesystem->is_dir( $dest_dir ) ) {
+            $created = $wp_filesystem->mkdir( $dest_dir, FS_CHMOD_DIR );
+            if ( ! $created ) {
+                set_transient( 'dmc_install_error', __( 'Unable to create plugin destination folder in wp-content/plugins/.', 'digital-marketplace' ), DAY_IN_SECONDS );
+                return;
+            }
+        }
+
+        // Copy all plugin files recursively using core copy_dir()
+        $copy_result = copy_dir( $source_dir, $dest_dir );
+        if ( is_wp_error( $copy_result ) ) {
+            set_transient( 'dmc_install_error', $copy_result->get_error_message(), DAY_IN_SECONDS );
+            return;
+        }
+    }
+
+    // 3. Activate the plugin
+    $activate_result = activate_plugin( $plugin_file );
+    if ( is_wp_error( $activate_result ) ) {
+        set_transient( 'dmc_install_error', $activate_result->get_error_message(), DAY_IN_SECONDS );
+        return;
+    }
+
+    // Clear any past failure notices on successful activation
+    delete_transient( 'dmc_install_error' );
+    update_option( 'dmc_plugin_auto_installed', 1 );
+}
+add_action( 'after_switch_theme', 'digital_marketplace_auto_install_bundled_plugin' );
+
+/**
+ * Handle manual dismissal of the plugin installation admin notice.
+ */
+function digital_marketplace_handle_plugin_notice_dismissal() {
+    if ( isset( $_GET['dmc_dismiss_notice'] ) && check_admin_referer( 'dmc_dismiss_notice' ) ) {
+        if ( current_user_can( 'activate_plugins' ) ) {
+            update_user_meta( get_current_user_id(), 'dmc_dismiss_install_notice', 1 );
+        }
+        wp_safe_redirect( remove_query_arg( array( 'dmc_dismiss_notice', '_wpnonce' ) ) );
+        exit;
+    }
+}
+add_action( 'admin_init', 'digital_marketplace_handle_plugin_notice_dismissal' );
+
+/**
+ * Display a clear, dismissible admin notice if the plugin is not active.
+ * Covers both failed auto-installs and instances where the theme was already
+ * active before the plugin files were introduced.
+ */
+function digital_marketplace_plugin_admin_notice() {
+    // Only display to administrators who can manage plugins
+    if ( ! current_user_can( 'activate_plugins' ) ) {
+        return;
+    }
+
+    // Check if user previously dismissed this notice
+    if ( get_user_meta( get_current_user_id(), 'dmc_dismiss_install_notice', true ) ) {
+        return;
+    }
+
+    if ( ! function_exists( 'is_plugin_active' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+
+    $plugin_file = 'digital-marketplace-commerce/digital-marketplace-commerce.php';
+
+    // If plugin is successfully active, do not display notice
+    if ( is_plugin_active( $plugin_file ) ) {
+        return;
+    }
+
+    // Only display notice if the bundled plugin folder exists in the theme
+    $source_dir = get_template_directory() . '/digital-marketplace-commerce';
+    if ( ! is_dir( $source_dir ) ) {
+        return;
+    }
+
+    $plugins_url = admin_url( 'plugins.php' );
+    $dismiss_url = wp_nonce_url( add_query_arg( 'dmc_dismiss_notice', '1' ), 'dmc_dismiss_notice' );
+    ?>
+    <div class="notice notice-warning is-dismissible">
+        <p>
+            <strong><?php esc_html_e( 'Digital Marketplace Commerce:', 'digital-marketplace' ); ?></strong>
+            <?php esc_html_e( 'The Digital Marketplace Commerce plugin could not be installed automatically. Please manually copy the \'digital-marketplace-commerce\' folder from your theme directory into wp-content/plugins/ and activate it from the Plugins screen.', 'digital-marketplace' ); ?>
+        </p>
+        <p>
+            <a href="<?php echo esc_url( $plugins_url ); ?>" class="button button-primary">
+                <?php esc_html_e( 'Go to Plugins Screen', 'digital-marketplace' ); ?>
+            </a>
+            <a href="<?php echo esc_url( $dismiss_url ); ?>" class="button button-secondary" style="margin-left: 0.5rem;">
+                <?php esc_html_e( 'Dismiss', 'digital-marketplace' ); ?>
+            </a>
+        </p>
+    </div>
+    <?php
+}
+add_action( 'admin_notices', 'digital_marketplace_plugin_admin_notice' );
+
+/**
+ * Fires when switching AWAY from this theme.
+ *
+ * We intentionally do NOT deactivate or delete the digital-marketplace-commerce
+ * plugin, ensuring all customer orders, crypto transaction records, and store
+ * settings persist safely even if the user switches themes in the future.
+ */
+function digital_marketplace_on_switch_theme() {
+    // Intentionally empty: do not deactivate or delete the commerce plugin.
+    // Preserves dmc_order posts, meta, and cryptocurrency settings.
+}
+add_action( 'switch_theme', 'digital_marketplace_on_switch_theme' );
+
+/**
+ * Handle frontend login errors: redirect back to /login with error query args
+ * instead of exposing the WordPress core /wp-login.php screen.
+ */
+function digital_marketplace_login_failed_redirect( $username ) {
+    $referrer = wp_get_referer();
+    if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
+        wp_safe_redirect( add_query_arg( 'login', 'failed', home_url( '/login' ) ) );
+        exit;
+    }
+}
+add_action( 'wp_login_failed', 'digital_marketplace_login_failed_redirect' );
+
+/**
+ * Intercept empty user/pass submissions from custom frontend login.
+ */
+function digital_marketplace_authenticate_check( $user, $username, $password ) {
+    $referrer = wp_get_referer();
+    if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
+        if ( empty( $username ) || empty( $password ) ) {
+            wp_safe_redirect( add_query_arg( 'login', 'empty', home_url( '/login' ) ) );
+            exit;
+        }
+    }
+    return $user;
+}
+add_filter( 'authenticate', 'digital_marketplace_authenticate_check', 20, 3 );
+
+

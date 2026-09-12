@@ -70,24 +70,68 @@ get_header(); ?>
 
             <div class="categories-grid">
                 <?php
-                $categories = array(
-                    array( 'name' => 'UI & Design Kits', 'icon' => '🎨', 'count' => '120+ assets', 'slug' => 'ui-design-kits' ),
-                    array( 'name' => 'Developer Boilerplates', 'icon' => '💻', 'count' => '85+ stacks', 'slug' => 'developer-boilerplates' ),
-                    array( 'name' => 'Fonts & Typography', 'icon' => '🔤', 'count' => '45+ families', 'slug' => 'fonts-typography' ),
-                    array( 'name' => 'Audio & SFX Packs', 'icon' => '🎵', 'count' => '60+ packs', 'slug' => 'audio-sfx-packs' ),
-                    array( 'name' => '3D Assets & Icons', 'icon' => '🧊', 'count' => '90+ sets', 'slug' => '3d-assets-icons' ),
-                    array( 'name' => 'Productivity Templates', 'icon' => '📈', 'count' => '110+ systems', 'slug' => 'productivity-templates' ),
+                $terms = get_terms( array(
+                    'taxonomy'   => 'product_cat',
+                    'hide_empty' => false,
+                    'number'     => 6,
+                ) );
+
+                $default_icons = array(
+                    'ui'        => '🎨',
+                    'design'    => '🎨',
+                    'dev'       => '💻',
+                    'code'      => '💻',
+                    'font'      => '🔤',
+                    'type'      => '🔤',
+                    'audio'     => '🎵',
+                    'sound'     => '🎵',
+                    '3d'        => '🧊',
+                    'icon'      => '🧊',
+                    'template'  => '📈',
+                    'product'   => '📦',
                 );
 
-                foreach ( $categories as $cat ) :
-                    $cat_url = add_query_arg( 'product_cat', $cat['slug'], home_url( '/products' ) );
-                ?>
-                    <a href="<?php echo esc_url( $cat_url ); ?>" class="category-card">
-                        <div class="category-card-icon"><?php echo esc_html( $cat['icon'] ); ?></div>
-                        <span class="category-card-title"><?php echo esc_html( $cat['name'] ); ?></span>
-                        <span class="category-card-count"><?php echo esc_html( $cat['count'] ); ?></span>
-                    </a>
-                <?php endforeach; ?>
+                if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) :
+                    foreach ( $terms as $term ) :
+                        $icon = '📦';
+                        foreach ( $default_icons as $keyword => $emoji ) {
+                            if ( stripos( $term->slug, $keyword ) !== false || stripos( $term->name, $keyword ) !== false ) {
+                                $icon = $emoji;
+                                break;
+                            }
+                        }
+                        $count_text = sprintf(
+                            /* translators: %d: number of products */
+                            _n( '%d asset', '%d assets', $term->count, 'digital-marketplace' ),
+                            $term->count
+                        );
+                        ?>
+                        <a href="<?php echo esc_url( get_term_link( $term ) ); ?>" class="category-card">
+                            <div class="category-card-icon"><?php echo esc_html( $icon ); ?></div>
+                            <span class="category-card-title"><?php echo esc_html( $term->name ); ?></span>
+                            <span class="category-card-count"><?php echo esc_html( $count_text ); ?></span>
+                        </a>
+                    <?php endforeach;
+                else : 
+                    // Clean starter layout when taxonomy terms have not yet been seeded
+                    $starter_categories = array(
+                        array( 'name' => __( 'UI & Design Kits', 'digital-marketplace' ), 'icon' => '🎨', 'slug' => 'ui-design-kits' ),
+                        array( 'name' => __( 'Developer Boilerplates', 'digital-marketplace' ), 'icon' => '💻', 'slug' => 'developer-boilerplates' ),
+                        array( 'name' => __( 'Fonts & Typography', 'digital-marketplace' ), 'icon' => '🔤', 'slug' => 'fonts-typography' ),
+                        array( 'name' => __( 'Audio & SFX Packs', 'digital-marketplace' ), 'icon' => '🎵', 'slug' => 'audio-sfx-packs' ),
+                        array( 'name' => __( '3D Assets & Icons', 'digital-marketplace' ), 'icon' => '🧊', 'slug' => '3d-assets-icons' ),
+                        array( 'name' => __( 'Productivity Templates', 'digital-marketplace' ), 'icon' => '📈', 'slug' => 'productivity-templates' ),
+                    );
+                    foreach ( $starter_categories as $cat ) :
+                        $cat_url = add_query_arg( 'product_cat', $cat['slug'], home_url( '/products' ) );
+                    ?>
+                        <a href="<?php echo esc_url( $cat_url ); ?>" class="category-card">
+                            <div class="category-card-icon"><?php echo esc_html( $cat['icon'] ); ?></div>
+                            <span class="category-card-title"><?php echo esc_html( $cat['name'] ); ?></span>
+                            <span class="category-card-count"><?php esc_html_e( 'Explore category', 'digital-marketplace' ); ?></span>
+                        </a>
+                    <?php endforeach;
+                endif; ?>
             </div>
         </div>
     </section>
@@ -159,10 +203,18 @@ get_header(); ?>
                             <div class="product-card-body">
                                 <div class="product-card-meta">
                                     <span><?php esc_html_e( 'By', 'digital-marketplace' ); ?> <?php the_author(); ?></span>
-                                    <div class="product-card-rating">
-                                        <span>★ <?php echo esc_html( $rating ? $rating : '4.9' ); ?></span>
-                                        <span style="color: var(--text-light);">(<?php echo esc_html( $review_count ? $review_count : '95' ); ?>)</span>
-                                    </div>
+                                    <?php if ( $rating ) : ?>
+                                        <div class="product-card-rating">
+                                            <span>★ <?php echo esc_html( $rating ); ?></span>
+                                            <?php if ( $review_count ) : ?>
+                                                <span style="color: var(--text-light);">(<?php echo esc_html( $review_count ); ?>)</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else : ?>
+                                        <div class="product-card-rating">
+                                            <span style="color: #059669; font-size: 0.75rem; font-weight: 600;">✓ <?php esc_html_e( 'Verified', 'digital-marketplace' ); ?></span>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <h3 class="product-card-title">
                                     <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>

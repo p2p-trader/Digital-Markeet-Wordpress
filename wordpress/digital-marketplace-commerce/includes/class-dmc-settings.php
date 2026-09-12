@@ -65,6 +65,18 @@ class DMC_Settings {
             'sanitize_callback' => 'absint',
             'default'           => 24,
         ) );
+
+        register_setting( 'dmc_settings_group', 'dmc_admin_notification_email', array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_email',
+            'default'           => '',
+        ) );
+
+        register_setting( 'dmc_settings_group', 'dmc_max_download_count', array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+            'default'           => 0,
+        ) );
     }
 
     /**
@@ -166,6 +178,56 @@ class DMC_Settings {
                                 <span style="margin-left: 8px; color: #64748b;"><?php esc_html_e( 'hours', 'digital-marketplace-commerce' ); ?></span>
                                 <p class="description">
                                     <?php esc_html_e( 'Unpaid orders exceeding this duration will display an informational warning flag in wp-admin Orders list. (No automatic cancellation occurs).', 'digital-marketplace-commerce' ); ?>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Section 4: Admin Order Notifications -->
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                    <h2 style="margin-top: 0; font-size: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                        🔔 <?php esc_html_e( 'Admin Order Notifications', 'digital-marketplace-commerce' ); ?>
+                    </h2>
+                    <p style="font-size: 13px; color: #64748b;">
+                        <?php esc_html_e( 'Configure where store alerts are sent when a customer places a new cryptocurrency order.', 'digital-marketplace-commerce' ); ?>
+                    </p>
+                    <table class="form-table" role="presentation">
+                        <tr>
+                            <th scope="row">
+                                <label for="dmc_admin_notification_email"><strong><?php esc_html_e( 'Admin Notification Email', 'digital-marketplace-commerce' ); ?></strong></label>
+                            </th>
+                            <td>
+                                <input type="email" id="dmc_admin_notification_email" name="dmc_admin_notification_email" value="<?php echo esc_attr( get_option( 'dmc_admin_notification_email', '' ) ); ?>" class="regular-text" style="width: 100%;" placeholder="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" />
+                                <p class="description">
+                                    <?php 
+                                    /* translators: %s: default admin email */
+                                    printf( esc_html__( 'Enter an email address to receive new order alerts. Leave blank to default to your WordPress site admin email (%s).', 'digital-marketplace-commerce' ), '<code>' . esc_html( get_option( 'admin_email' ) ) . '</code>' ); 
+                                    ?>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Section 5: Digital Download Controls & Safety -->
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                    <h2 style="margin-top: 0; font-size: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                        🔒 <?php esc_html_e( 'Digital Download Safety & Token Limits', 'digital-marketplace-commerce' ); ?>
+                    </h2>
+                    <p style="font-size: 13px; color: #64748b;">
+                        <?php esc_html_e( 'Protect your assets by restricting the maximum number of times a purchased download link can be used.', 'digital-marketplace-commerce' ); ?>
+                    </p>
+                    <table class="form-table" role="presentation">
+                        <tr>
+                            <th scope="row">
+                                <label for="dmc_max_download_count"><strong><?php esc_html_e( 'Max Downloads Per Token', 'digital-marketplace-commerce' ); ?></strong></label>
+                            </th>
+                            <td>
+                                <input type="number" id="dmc_max_download_count" name="dmc_max_download_count" value="<?php echo esc_attr( get_option( 'dmc_max_download_count', 0 ) ); ?>" min="0" max="100" style="width: 100px;" />
+                                <span style="margin-left: 8px; color: #64748b;"><?php esc_html_e( 'downloads (0 = Unlimited)', 'digital-marketplace-commerce' ); ?></span>
+                                <p class="description">
+                                    <?php esc_html_e( 'Enter the maximum number of times a customer can download each purchased file with their unique order token. Set to 0 or leave blank for unlimited customer downloads.', 'digital-marketplace-commerce' ); ?>
                                 </p>
                             </td>
                         </tr>

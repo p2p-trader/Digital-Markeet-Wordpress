@@ -98,10 +98,18 @@ get_header(); ?>
                         <div class="product-card-body">
                             <div class="product-card-meta">
                                 <span><?php echo esc_html( $file_format ? $file_format : 'Digital Files' ); ?></span>
-                                <div class="product-card-rating">
-                                    <span>★ <?php echo esc_html( $rating ? $rating : '4.9' ); ?></span>
-                                    <span style="color: var(--text-light);">(<?php echo esc_html( $review_count ? $review_count : '68' ); ?>)</span>
-                                </div>
+                                <?php if ( $rating ) : ?>
+                                    <div class="product-card-rating">
+                                        <span>★ <?php echo esc_html( $rating ); ?></span>
+                                        <?php if ( $review_count ) : ?>
+                                            <span style="color: var(--text-light);">(<?php echo esc_html( $review_count ); ?>)</span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php else : ?>
+                                    <div class="product-card-rating">
+                                        <span style="color: #059669; font-size: 0.75rem; font-weight: 600;">✓ <?php esc_html_e( 'Verified', 'digital-marketplace' ); ?></span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
                             <h2 class="product-card-title">

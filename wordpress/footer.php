@@ -84,10 +84,11 @@
         <!-- Footer Bottom Bar -->
         <div class="footer-bottom">
             <p>&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. <?php esc_html_e( 'All rights reserved.', 'digital-marketplace' ); ?></p>
-            <div style="display: flex; gap: 1.25rem;">
+            <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
                 <a href="<?php echo esc_url( home_url( '/products' ) ); ?>"><?php esc_html_e( 'Catalog', 'digital-marketplace' ); ?></a>
                 <a href="<?php echo esc_url( home_url( '/cart' ) ); ?>"><?php esc_html_e( 'Cart', 'digital-marketplace' ); ?></a>
                 <a href="<?php echo esc_url( home_url( '/account' ) ); ?>"><?php esc_html_e( 'Dashboard', 'digital-marketplace' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/terms' ) ); ?>"><?php esc_html_e( 'Terms & Refund Policy', 'digital-marketplace' ); ?></a>
             </div>
         </div>
 

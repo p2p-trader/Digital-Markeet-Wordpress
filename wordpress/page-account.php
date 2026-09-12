@@ -170,13 +170,47 @@ get_header(); ?>
                                             <td style="font-weight: 900;">$<?php echo esc_html( number_format( $total, 2 ) ); ?></td>
                                             <td>
                                                 <?php if ( $status === 'Completed' ) : ?>
-                                                    <a href="#" class="btn btn-secondary btn-sm" onclick="alert('Instant asset download active for Order #<?php echo esc_js( $order_id ); ?>'); return false;">
-                                                        ⬇️ <?php esc_html_e( 'Download', 'digital-marketplace' ); ?>
-                                                    </a>
+                                                    <?php 
+                                                    $order_downloads = array();
+                                                    if ( is_array( $items ) && class_exists( 'DMC_Downloads' ) ) {
+                                                        foreach ( $items as $it ) {
+                                                            $pid = ! empty( $it['id'] ) ? absint( $it['id'] ) : 0;
+                                                            if ( $pid && DMC_Downloads::has_download_file( $pid ) ) {
+                                                                $dl_url = DMC_Downloads::get_download_url( $order_id, $pid );
+                                                                if ( $dl_url ) {
+                                                                    $order_downloads[] = array(
+                                                                        'url'   => $dl_url,
+                                                                        'title' => $it['title'] ?? __( 'File', 'digital-marketplace' ),
+                                                                    );
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <?php if ( ! empty( $order_downloads ) ) : ?>
+                                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                            <?php foreach ( $order_downloads as $odl ) : ?>
+                                                                <a href="<?php echo esc_url( $odl['url'] ); ?>" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 4px 8px; white-space: nowrap;">
+                                                                    ⬇️ <?php echo esc_html( count( $order_downloads ) > 1 ? $odl['title'] : __( 'Download File', 'digital-marketplace' ) ); ?>
+                                                                </a>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    <?php else : ?>
+                                                        <span style="font-size: 0.75rem; color: var(--text-muted);">
+                                                            <?php esc_html_e( 'No file attached', 'digital-marketplace' ); ?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                <?php elseif ( $status === 'Awaiting Payment' || $status === 'Paid - Processing' ) : ?>
+                                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                        <span style="font-size: 0.725rem; color: #b45309; font-weight: 600;">
+                                                            ⏳ <?php esc_html_e( 'Payment verification pending', 'digital-marketplace' ); ?>
+                                                        </span>
+                                                        <a href="<?php echo esc_url( $confirm_url ); ?>" class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 4px 8px;">
+                                                            🪙 <?php esc_html_e( 'Payment Info', 'digital-marketplace' ); ?>
+                                                        </a>
+                                                    </div>
                                                 <?php else : ?>
-                                                    <a href="<?php echo esc_url( $confirm_url ); ?>" class="btn btn-primary btn-sm">
-                                                        🪙 <?php esc_html_e( 'Instructions', 'digital-marketplace' ); ?>
-                                                    </a>
+                                                    <span style="font-size: 0.75rem; color: var(--text-muted);"><?php echo esc_html( $status ); ?></span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
@@ -272,35 +306,153 @@ get_header(); ?>
             <!-- TAB 2: Downloads Panel -->
             <div id="panel-downloads" class="account-tab-panel" style="display: none;">
                 <div style="background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-xs);">
-                    <h2 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1.25rem;"><?php esc_html_e( 'Active Asset Licenses & Files', 'digital-marketplace' ); ?></h2>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <div style="font-size: 1.75rem;">📦</div>
-                                <div>
-                                    <h4 style="font-weight: 800; font-size: 0.95rem;">Apex SaaS UI Design System (v2.4)</h4>
-                                    <p style="font-size: 0.75rem; color: var(--text-muted);">ZIP • 142 MB • Expires: Never (Lifetime Access)</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0;"><?php esc_html_e( 'Active Asset Licenses & Downloads', 'digital-marketplace' ); ?></h2>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);"><?php esc_html_e( 'Secure Cloud Delivery', 'digital-marketplace' ); ?></span>
+                    </div>
+
+                    <?php
+                    // 1. Digital Marketplace Commerce: Query completed orders for the current user
+                    $user_email = $current_user->user_email;
+                    $dmc_downloads_list = array();
+
+                    $completed_orders = get_posts( array(
+                        'post_type'      => 'dmc_order',
+                        'post_status'    => 'any',
+                        'posts_per_page' => 100,
+                        'meta_query'     => array(
+                            'relation' => 'AND',
+                            array(
+                                'key'     => '_dmc_customer_email',
+                                'value'   => $user_email,
+                                'compare' => '=',
+                            ),
+                            array(
+                                'key'     => '_dmc_order_status',
+                                'value'   => 'Completed',
+                                'compare' => '=',
+                            ),
+                        ),
+                    ) );
+
+                    if ( ! empty( $completed_orders ) && class_exists( 'DMC_Downloads' ) ) {
+                        foreach ( $completed_orders as $order_post ) {
+                            $oid = $order_post->ID;
+                            $order_date = get_the_date( 'M j, Y', $oid );
+                            $items = get_post_meta( $oid, '_dmc_order_items', true );
+
+                            if ( is_array( $items ) ) {
+                                foreach ( $items as $it ) {
+                                    $pid = ! empty( $it['id'] ) ? absint( $it['id'] ) : 0;
+                                    if ( $pid && DMC_Downloads::has_download_file( $pid ) ) {
+                                        $dl_url = DMC_Downloads::get_download_url( $oid, $pid );
+                                        if ( $dl_url ) {
+                                            $finfo = DMC_Downloads::get_product_file_info( $pid );
+                                            $dmc_downloads_list[] = array(
+                                                'title'        => ! empty( $it['title'] ) ? $it['title'] : get_the_title( $pid ),
+                                                'product_id'   => $pid,
+                                                'order_id'     => $oid,
+                                                'order_date'   => $order_date,
+                                                'filename'     => $finfo['filename'] ?? 'package.zip',
+                                                'filesize'     => $finfo['filesize'] ?? '',
+                                                'download_url' => $dl_url,
+                                                'extension'    => $finfo['extension'] ?? 'zip',
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 2. WooCommerce Fallback downloads check if WooCommerce is installed
+                    $wc_downloads = array();
+                    if ( function_exists( 'WC' ) && WC()->customer ) {
+                        $wc_downloads = WC()->customer->get_downloadable_products();
+                    }
+                    ?>
+
+                    <?php if ( ! empty( $dmc_downloads_list ) ) : ?>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <?php foreach ( $dmc_downloads_list as $dl_item ) : 
+                                $ext = strtolower( $dl_item['extension'] );
+                                $file_icon = '📦';
+                                if ( in_array( $ext, array( 'zip', 'tar', 'gz', 'rar', '7z' ), true ) ) {
+                                    $file_icon = '🗜️';
+                                } elseif ( in_array( $ext, array( 'pdf', 'doc', 'docx' ), true ) ) {
+                                    $file_icon = '📄';
+                                } elseif ( in_array( $ext, array( 'dmg', 'exe', 'app' ), true ) ) {
+                                    $file_icon = '💻';
+                                }
+                            ?>
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.15rem 1.25rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #fafaf9; gap: 1rem; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 1.1rem; min-width: 260px;">
+                                        <div style="font-size: 2rem; line-height: 1; flex-shrink: 0;"><?php echo esc_html( $file_icon ); ?></div>
+                                        <div>
+                                            <h4 style="font-weight: 800; font-size: 1rem; color: var(--text-main); margin: 0 0 0.25rem 0;">
+                                                <?php echo esc_html( $dl_item['title'] ); ?>
+                                            </h4>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                                                <span style="font-family: monospace; font-weight: 600; color: #475569;">
+                                                    <?php echo esc_html( $dl_item['filename'] ); ?>
+                                                </span>
+                                                <?php if ( ! empty( $dl_item['filesize'] ) ) : ?>
+                                                    <span>• <?php echo esc_html( $dl_item['filesize'] ); ?></span>
+                                                <?php endif; ?>
+                                                <span>•</span>
+                                                <span><?php printf( esc_html__( 'Order #%d (%s)', 'digital-marketplace' ), esc_html( $dl_item['order_id'] ), esc_html( $dl_item['order_date'] ) ); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <a href="<?php echo esc_url( $dl_item['download_url'] ); ?>" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+                                            ⬇️ <?php esc_html_e( 'Download File', 'digital-marketplace' ); ?>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <button class="btn btn-primary btn-sm" onclick="alert('Downloading Apex-UI-Kit-v2.4.zip...');">
-                                ⬇️ <?php esc_html_e( 'Download File', 'digital-marketplace' ); ?>
-                            </button>
+                            <?php endforeach; ?>
                         </div>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <div style="font-size: 1.75rem;">⚡</div>
-                                <div>
-                                    <h4 style="font-weight: 800; font-size: 0.95rem;">NextJS 15 SaaS Starter Boilerplate (v1.8)</h4>
-                                    <p style="font-size: 0.75rem; color: var(--text-muted);">ZIP + GitHub Access • 48 MB • Lifetime Access</p>
+                    <?php elseif ( ! empty( $wc_downloads ) ) : ?>
+                        <!-- WooCommerce Downloads Fallback -->
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <?php foreach ( $wc_downloads as $wc_download ) : ?>
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #fafaf9;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="font-size: 1.75rem;">📦</div>
+                                        <div>
+                                            <h4 style="font-weight: 800; font-size: 0.95rem; margin: 0 0 0.25rem 0;">
+                                                <?php echo esc_html( $wc_download['product_name'] ); ?>
+                                            </h4>
+                                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+                                                <?php echo esc_html( $wc_download['download_name'] ); ?> • 
+                                                <?php printf( esc_html__( 'Order #%s', 'digital-marketplace' ), esc_html( $wc_download['order_number'] ) ); ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <a href="<?php echo esc_url( $wc_download['download_url'] ); ?>" class="btn btn-primary btn-sm">
+                                        ⬇️ <?php esc_html_e( 'Download', 'digital-marketplace' ); ?>
+                                    </a>
                                 </div>
-                            </div>
-                            <button class="btn btn-primary btn-sm" onclick="alert('Downloading NextJS15-Starter-v1.8.zip...');">
-                                ⬇️ <?php esc_html_e( 'Download File', 'digital-marketplace' ); ?>
-                            </button>
+                            <?php endforeach; ?>
                         </div>
-                    </div>
+
+                    <?php else : ?>
+                        <!-- Clean Empty State -->
+                        <div style="text-align: center; padding: 3rem 1.5rem; background: #fafaf9; border: 1px dashed var(--border-subtle); border-radius: var(--radius-md);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem; line-height: 1;">📂</div>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">
+                                <?php esc_html_e( 'No Downloadable Files Available', 'digital-marketplace' ); ?>
+                            </h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 440px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                                <?php esc_html_e( 'You do not have any active product downloads yet. Once you complete a purchase and payment is confirmed, your files and lifetime access links will appear right here.', 'digital-marketplace' ); ?>
+                            </p>
+                            <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-primary btn-md" style="font-weight: 700;">
+                                <?php esc_html_e( 'Browse Digital Marketplace Catalog →', 'digital-marketplace' ); ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
 

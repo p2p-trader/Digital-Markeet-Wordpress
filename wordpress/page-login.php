@@ -54,7 +54,15 @@ get_header(); ?>
                 // Display error message if WP login redirected with login error
                 if ( isset( $_GET['login'] ) && 'failed' === $_GET['login'] ) : ?>
                     <div style="padding: 0.75rem; background-color: var(--color-danger-bg); color: var(--color-danger); border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 600; margin-bottom: 1.25rem;">
-                        <?php esc_html_e( 'Invalid username or password. Please try again.', 'digital-marketplace' ); ?>
+                        ⚠️ <?php esc_html_e( 'Invalid username or password. Please check your credentials and try again.', 'digital-marketplace' ); ?>
+                    </div>
+                <?php elseif ( isset( $_GET['login'] ) && 'empty' === $_GET['login'] ) : ?>
+                    <div style="padding: 0.75rem; background-color: var(--color-danger-bg); color: var(--color-danger); border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 600; margin-bottom: 1.25rem;">
+                        ⚠️ <?php esc_html_e( 'Please enter both your username/email address and password.', 'digital-marketplace' ); ?>
+                    </div>
+                <?php elseif ( isset( $_GET['loggedout'] ) && 'true' === $_GET['loggedout'] ) : ?>
+                    <div style="padding: 0.75rem; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 600; margin-bottom: 1.25rem;">
+                        ✓ <?php esc_html_e( 'You have been signed out successfully.', 'digital-marketplace' ); ?>
                     </div>
                 <?php endif; ?>
 

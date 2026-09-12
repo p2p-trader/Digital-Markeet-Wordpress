@@ -40,17 +40,15 @@ wordpress/
 
 ## 🚀 Installation & Setup
 
-### Step 1: Install the Theme
-1. Copy the `wordpress` folder (excluding the plugin folder or leaving it intact) into your WordPress installation at:
+### Step 1: Install & Activate the Theme (Automatic Plugin Installation)
+1. Copy the `wordpress` folder into your WordPress installation at:
    `wp-content/themes/digital-marketplace/`
-2. In your WordPress Admin Dashboard, go to **Appearance > Themes** and click **Activate** on **Digital Marketplace Theme**.
+   *(Ensure the bundled `digital-marketplace-commerce/` folder remains inside the theme folder).*
+2. In your WordPress Admin Dashboard, navigate to **Appearance > Themes** and click **Activate** on **Digital Marketplace Theme**.
+3. **Auto-Install Magic**: Upon theme activation, `functions.php` automatically copies the bundled `digital-marketplace-commerce` folder into `wp-content/plugins/` using the secure WordPress Filesystem API and activates it immediately.
+4. If your server environment prevents automatic file copying (such as strict file ownership or read-only `wp-content/plugins/`), an informational admin notice will appear in `wp-admin` with instructions to copy the folder manually.
 
-### Step 2: Install the Standalone Commerce Plugin
-1. Move the `digital-marketplace-commerce` folder into:
-   `wp-content/plugins/digital-marketplace-commerce/`
-2. In your WordPress Admin Dashboard, go to **Plugins > Installed Plugins** and click **Activate** on **Digital Marketplace Commerce**.
-
-### Step 3: Configure Crypto Wallets
+### Step 2: Configure Crypto Wallets
 1. Go to **Settings > Digital Marketplace** in your WordPress admin menu.
 2. Enter your real cryptocurrency wallet addresses:
    - **Bitcoin (BTC)** address

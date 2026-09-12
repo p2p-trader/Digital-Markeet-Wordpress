@@ -25,6 +25,7 @@ define( 'DMC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 // Load Core Components
 require_once DMC_PLUGIN_DIR . 'includes/class-dmc-cart.php';
 require_once DMC_PLUGIN_DIR . 'includes/class-dmc-post-type.php';
+require_once DMC_PLUGIN_DIR . 'includes/class-dmc-downloads.php';
 require_once DMC_PLUGIN_DIR . 'includes/class-dmc-ajax.php';
 require_once DMC_PLUGIN_DIR . 'includes/class-dmc-checkout.php';
 require_once DMC_PLUGIN_DIR . 'includes/class-dmc-settings.php';
@@ -34,6 +35,7 @@ require_once DMC_PLUGIN_DIR . 'includes/class-dmc-settings.php';
  */
 function dmc_commerce_init() {
     DMC_Post_Type::init();
+    DMC_Downloads::init();
     DMC_Ajax::init();
     DMC_Checkout::init();
     DMC_Settings::init();
