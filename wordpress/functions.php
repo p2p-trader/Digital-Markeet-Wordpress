@@ -60,11 +60,19 @@ add_action( 'after_setup_theme', 'digital_marketplace_setup' );
  * Strictly no hardcoded <link> or <script> tags.
  */
 function digital_marketplace_scripts() {
+    // Google Fonts: Plus Jakarta Sans (UI, Headings, Body) and JetBrains Mono (Code, Wallet Hashes)
+    wp_enqueue_style(
+        'digital-marketplace-fonts',
+        'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+        array(),
+        null
+    );
+
     // Theme core stylesheet (contains standard WordPress header).
     wp_enqueue_style(
         'digital-marketplace-style',
         get_stylesheet_uri(),
-        array(),
+        array( 'digital-marketplace-fonts' ),
         DIGITAL_MARKETPLACE_VERSION
     );
 

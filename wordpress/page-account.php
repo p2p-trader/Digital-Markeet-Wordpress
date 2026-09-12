@@ -7,23 +7,23 @@
 
 get_header(); ?>
 
-<div id="marketplace-account-page" class="account-container">
+<div id="marketplace-account-page" class="account-container account-page-wrapper">
     <div class="site-container">
 
         <?php if ( ! is_user_logged_in() ) : ?>
             <!-- Prompt to Log In if not authenticated -->
-            <div style="max-width: 480px; margin: 3rem auto; text-align: center; background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 3rem 2rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔒</div>
-                <h1 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem;"><?php esc_html_e( 'Sign in to Access Your Account', 'digital-marketplace' ); ?></h1>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem;">
-                    <?php esc_html_e( 'View your purchased licenses, invoices, and instantaneous digital downloads.', 'digital-marketplace' ); ?>
+            <div class="account-auth-prompt-card">
+                <div class="prompt-icon-badge">🔒</div>
+                <h1 class="prompt-title"><?php esc_html_e( 'Sign in to Access Your Account', 'digital-marketplace' ); ?></h1>
+                <p class="prompt-subtitle">
+                    <?php esc_html_e( 'View your purchased asset licenses, invoices, and instantaneous digital download tokens.', 'digital-marketplace' ); ?>
                 </p>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div class="prompt-actions">
                     <a href="<?php echo esc_url( home_url( '/login' ) ); ?>" class="btn btn-primary btn-block btn-lg">
-                        <?php esc_html_e( 'Sign In to Account', 'digital-marketplace' ); ?>
+                        <?php esc_html_e( 'Sign In to Account →', 'digital-marketplace' ); ?>
                     </a>
                     <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-secondary btn-block">
-                        <?php esc_html_e( 'Browse Marketplace', 'digital-marketplace' ); ?>
+                        <?php esc_html_e( 'Browse Marketplace Products', 'digital-marketplace' ); ?>
                     </a>
                 </div>
             </div>
@@ -39,57 +39,63 @@ get_header(); ?>
                     <div class="user-avatar-box">
                         <?php echo get_avatar( $current_user->ID, 128 ); ?>
                     </div>
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <h1 style="font-size: 1.4rem; font-weight: 900; color: var(--text-main);">
+                    <div class="user-profile-details">
+                        <div class="user-name-row">
+                            <h1 class="user-display-name">
                                 <?php echo esc_html( $current_user->display_name ); ?>
                             </h1>
-                            <span class="status-badge" style="background-color: var(--color-accent-bg); color: var(--color-accent-dark);">
-                                <?php esc_html_e( 'Verified Buyer', 'digital-marketplace' ); ?>
+                            <span class="status-badge dmc-badge-verified">
+                                <span class="badge-dot">●</span> <?php esc_html_e( 'Verified Customer', 'digital-marketplace' ); ?>
                             </span>
                         </div>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                        <p class="user-email-text">
                             <?php echo esc_html( $current_user->user_email ); ?>
                         </p>
-                        <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">
+                        <p class="user-member-since">
                             <?php 
                             /* translators: %s: registration date */
-                            printf( esc_html__( 'Customer since %s', 'digital-marketplace' ), esc_html( $registered_date ) ); 
+                            printf( esc_html__( 'Customer member since %s', 'digital-marketplace' ), esc_html( $registered_date ) ); 
                             ?>
                         </p>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <div class="account-header-actions">
                     <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-secondary btn-sm">
                         <?php esc_html_e( '+ Browse Catalog', 'digital-marketplace' ); ?>
                     </a>
-                    <a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="btn btn-secondary btn-sm" style="color: var(--color-danger); border-color: var(--color-danger-bg);">
-                        <?php esc_html_e( 'Log Out', 'digital-marketplace' ); ?>
+                    <a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="btn btn-secondary btn-sm btn-logout">
+                        <?php esc_html_e( 'Sign Out', 'digital-marketplace' ); ?>
                     </a>
                 </div>
             </div>
 
-            <!-- Tab Navigation Bar -->
-            <div class="account-tab-nav" style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 2rem; overflow-x: auto;">
-                <button type="button" class="btn btn-sm btn-primary active" data-target="panel-orders" style="border-radius: var(--radius-sm) var(--radius-sm) 0 0;">
-                    📦 <?php esc_html_e( 'Order History', 'digital-marketplace' ); ?>
+            <!-- Modern Tab Navigation Bar -->
+            <nav class="account-tab-nav" aria-label="<?php esc_attr_e( 'Account sections', 'digital-marketplace' ); ?>">
+                <button type="button" class="tab-btn active" data-target="panel-orders">
+                    <span class="tab-icon">📦</span>
+                    <span><?php esc_html_e( 'Order History', 'digital-marketplace' ); ?></span>
                 </button>
-                <button type="button" class="btn btn-sm btn-secondary" data-target="panel-downloads" style="border-radius: var(--radius-sm) var(--radius-sm) 0 0;">
-                    ⬇️ <?php esc_html_e( 'My Downloads', 'digital-marketplace' ); ?>
+                <button type="button" class="tab-btn" data-target="panel-downloads">
+                    <span class="tab-icon">⬇️</span>
+                    <span><?php esc_html_e( 'My Downloads', 'digital-marketplace' ); ?></span>
                 </button>
-                <button type="button" class="btn btn-sm btn-secondary" data-target="panel-settings" style="border-radius: var(--radius-sm) var(--radius-sm) 0 0;">
-                    ⚙️ <?php esc_html_e( 'Profile Settings', 'digital-marketplace' ); ?>
+                <button type="button" class="tab-btn" data-target="panel-settings">
+                    <span class="tab-icon">⚙️</span>
+                    <span><?php esc_html_e( 'Profile Settings', 'digital-marketplace' ); ?></span>
                 </button>
-            </div>
+            </nav>
 
             <!-- TAB 1: Order History Panel -->
             <div id="panel-orders" class="account-tab-panel">
-                <div style="background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-xs);">
+                <div class="account-panel-card">
                     
-                    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="font-size: 1.1rem; font-weight: 800;"><?php esc_html_e( 'Recent Marketplace Orders', 'digital-marketplace' ); ?></h2>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);"><?php esc_html_e( 'Instant Digital Fulfillment', 'digital-marketplace' ); ?></span>
+                    <div class="account-panel-header">
+                        <div>
+                            <h2 class="panel-header-title"><?php esc_html_e( 'Recent Marketplace Orders', 'digital-marketplace' ); ?></h2>
+                            <p class="panel-header-sub"><?php esc_html_e( 'Real-time order statuses and cryptographic transaction records.', 'digital-marketplace' ); ?></p>
+                        </div>
+                        <span class="panel-header-badge"><?php esc_html_e( 'Instant Digital Fulfillment', 'digital-marketplace' ); ?></span>
                     </div>
 
                     <?php
@@ -118,7 +124,7 @@ get_header(); ?>
                     }
 
                     if ( $dmc_orders_query->have_posts() ) : ?>
-                        <div style="overflow-x: auto;">
+                        <div class="table-responsive">
                             <table class="order-history-table">
                                 <thead>
                                     <tr>
@@ -140,38 +146,38 @@ get_header(); ?>
                                         $order_key = get_post_meta( $order_id, '_dmc_order_key', true );
                                         $confirm_url = add_query_arg( array( 'dmc_order_id' => $order_id, 'order_key' => $order_key ), home_url( '/checkout' ) );
 
-                                        $badge_style = 'background:#fef3c7; color:#92400e;';
+                                        $badge_class = 'status-badge dmc-status-awaiting';
                                         if ( $status === 'Completed' ) {
-                                            $badge_style = 'background:#d1fae5; color:#065f46;';
+                                            $badge_class = 'status-badge dmc-status-completed';
                                         } elseif ( $status === 'Paid - Processing' ) {
-                                            $badge_style = 'background:#dbeafe; color:#1e40af;';
+                                            $badge_class = 'status-badge dmc-status-processing';
                                         } elseif ( $status === 'Cancelled' ) {
-                                            $badge_style = 'background:#fee2e2; color:#991b1b;';
+                                            $badge_class = 'status-badge dmc-status-cancelled';
                                         }
                                     ?>
                                         <tr>
-                                            <td style="font-weight: 700; font-family: monospace;">#<?php echo esc_html( $order_id ); ?></td>
-                                            <td><?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></td>
-                                            <td>
+                                            <td class="order-id-cell">#<?php echo esc_html( $order_id ); ?></td>
+                                            <td class="order-date-cell"><?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></td>
+                                            <td class="order-items-cell">
                                                 <?php if ( is_array( $items ) && ! empty( $items ) ) : ?>
-                                                    <span style="font-weight: 700;"><?php echo esc_html( $items[0]['title'] ?? 'Product' ); ?></span>
+                                                    <span class="order-item-title"><?php echo esc_html( $items[0]['title'] ?? 'Product' ); ?></span>
                                                     <?php if ( count( $items ) > 1 ) : ?>
-                                                        <p style="font-size: 0.75rem; color: var(--text-muted);">+<?php echo esc_html( count( $items ) - 1 ); ?> more items</p>
+                                                        <span class="order-more-tag">+<?php echo esc_html( count( $items ) - 1 ); ?> more</span>
                                                     <?php endif; ?>
                                                 <?php else : ?>
                                                     <span>Digital Goods License</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <span class="status-badge" style="<?php echo esc_attr( $badge_style ); ?>">
-                                                    <?php echo esc_html( $status ); ?>
+                                                <span class="<?php echo esc_attr( $badge_class ); ?>">
+                                                    <span class="status-dot">●</span> <?php echo esc_html( $status ); ?>
                                                 </span>
                                             </td>
-                                            <td style="font-weight: 900;">$<?php echo esc_html( number_format( $total, 2 ) ); ?></td>
-                                            <td>
+                                            <td class="order-total-cell">$<?php echo esc_html( number_format( $total, 2 ) ); ?></td>
+                                            <td class="order-action-cell">
                                                 <?php if ( $status === 'Completed' ) : ?>
                                                     <?php 
-                                                    $order_downloads = array();
+                                                     $order_downloads = array();
                                                     if ( is_array( $items ) && class_exists( 'DMC_Downloads' ) ) {
                                                         foreach ( $items as $it ) {
                                                             $pid = ! empty( $it['id'] ) ? absint( $it['id'] ) : 0;
@@ -188,29 +194,26 @@ get_header(); ?>
                                                     }
                                                     ?>
                                                     <?php if ( ! empty( $order_downloads ) ) : ?>
-                                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                        <div class="order-actions-stack">
                                                             <?php foreach ( $order_downloads as $odl ) : ?>
-                                                                <a href="<?php echo esc_url( $odl['url'] ); ?>" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 4px 8px; white-space: nowrap;">
+                                                                <a href="<?php echo esc_url( $odl['url'] ); ?>" class="btn btn-primary btn-sm btn-download-token">
                                                                     ⬇️ <?php echo esc_html( count( $order_downloads ) > 1 ? $odl['title'] : __( 'Download File', 'digital-marketplace' ) ); ?>
                                                                 </a>
                                                             <?php endforeach; ?>
                                                         </div>
                                                     <?php else : ?>
-                                                        <span style="font-size: 0.75rem; color: var(--text-muted);">
+                                                        <span class="text-muted-sm">
                                                             <?php esc_html_e( 'No file attached', 'digital-marketplace' ); ?>
                                                         </span>
                                                     <?php endif; ?>
                                                 <?php elseif ( $status === 'Awaiting Payment' || $status === 'Paid - Processing' ) : ?>
-                                                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                                                        <span style="font-size: 0.725rem; color: #b45309; font-weight: 600;">
-                                                            ⏳ <?php esc_html_e( 'Payment verification pending', 'digital-marketplace' ); ?>
-                                                        </span>
-                                                        <a href="<?php echo esc_url( $confirm_url ); ?>" class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 4px 8px;">
+                                                    <div class="order-actions-stack">
+                                                        <a href="<?php echo esc_url( $confirm_url ); ?>" class="btn btn-primary btn-sm btn-payment-info">
                                                             🪙 <?php esc_html_e( 'Payment Info', 'digital-marketplace' ); ?>
                                                         </a>
                                                     </div>
                                                 <?php else : ?>
-                                                    <span style="font-size: 0.75rem; color: var(--text-muted);"><?php echo esc_html( $status ); ?></span>
+                                                    <span class="text-muted-sm"><?php echo esc_html( $status ); ?></span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
@@ -219,7 +222,7 @@ get_header(); ?>
                             </table>
                         </div>
                     <?php elseif ( ! empty( $customer_orders ) ) : ?>
-                        <div style="overflow-x: auto;">
+                        <div class="table-responsive">
                             <table class="order-history-table">
                                 <thead>
                                     <tr>
@@ -233,13 +236,13 @@ get_header(); ?>
                                 <tbody>
                                     <?php foreach ( $customer_orders as $order ) : ?>
                                         <tr>
-                                            <td style="font-weight: 700;">#<?php echo esc_html( $order->get_id() ); ?></td>
-                                            <td><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></td>
-                                            <td><span class="status-badge"><?php echo esc_html( wc_get_order_status_name( $order->get_status() ) ); ?></span></td>
-                                            <td style="font-weight: 800;"><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></td>
+                                            <td class="order-id-cell">#<?php echo esc_html( $order->get_id() ); ?></td>
+                                            <td class="order-date-cell"><?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></td>
+                                            <td><span class="status-badge dmc-status-completed"><?php echo esc_html( wc_get_order_status_name( $order->get_status() ) ); ?></span></td>
+                                            <td class="order-total-cell"><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></td>
                                             <td>
                                                 <a href="<?php echo esc_url( $order->get_view_order_url() ); ?>" class="btn btn-secondary btn-sm">
-                                                    <?php esc_html_e( 'View', 'digital-marketplace' ); ?>
+                                                    <?php esc_html_e( 'View Order', 'digital-marketplace' ); ?>
                                                 </a>
                                             </td>
                                         </tr>
@@ -248,11 +251,8 @@ get_header(); ?>
                             </table>
                         </div>
                     <?php else : ?>
-                        <!-- 
-                            Pre-WooCommerce Mock Order History 
-                            Matches React app layout perfectly so the user sees populated order history right away!
-                        -->
-                        <div style="overflow-x: auto;">
+                        <!-- Sample Starter Orders for clean demonstration -->
+                        <div class="table-responsive">
                             <table class="order-history-table">
                                 <thead>
                                     <tr>
@@ -266,31 +266,31 @@ get_header(); ?>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td style="font-weight: 700; font-family: monospace;">#ORD-9842</td>
-                                        <td><?php echo esc_html( date( 'M j, Y' ) ); ?></td>
-                                        <td>
-                                            <span style="font-weight: 700;">Apex SaaS UI Design System</span>
-                                            <p style="font-size: 0.75rem; color: var(--text-muted);">Commercial License • Figma + React</p>
+                                        <td class="order-id-cell">#ORD-9842</td>
+                                        <td class="order-date-cell"><?php echo esc_html( date( 'M j, Y' ) ); ?></td>
+                                        <td class="order-items-cell">
+                                            <span class="order-item-title">Apex SaaS UI Design System</span>
+                                            <p class="order-item-sub">Commercial License • Figma + React</p>
                                         </td>
-                                        <td><span class="status-badge">Completed</span></td>
-                                        <td style="font-weight: 900;">$49.00</td>
+                                        <td><span class="status-badge dmc-status-completed"><span class="status-dot">●</span> Completed</span></td>
+                                        <td class="order-total-cell">$49.00</td>
                                         <td>
-                                            <a href="#" class="btn btn-secondary btn-sm" onclick="alert('Download started: Apex-UI-Kit-v2.4.zip'); return false;">
+                                            <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="alert('Download started: Apex-UI-Kit-v2.4.zip'); return false;">
                                                 ⬇️ <?php esc_html_e( 'Download ZIP', 'digital-marketplace' ); ?>
                                             </a>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="font-weight: 700; font-family: monospace;">#ORD-9721</td>
-                                        <td><?php echo esc_html( date( 'M j, Y', strtotime( '-5 days' ) ) ); ?></td>
-                                        <td>
-                                            <span style="font-weight: 700;">NextJS 15 SaaS Starter Boilerplate</span>
-                                            <p style="font-size: 0.75rem; color: var(--text-muted);">Team License • Full-Stack</p>
+                                        <td class="order-id-cell">#ORD-9721</td>
+                                        <td class="order-date-cell"><?php echo esc_html( date( 'M j, Y', strtotime( '-5 days' ) ) ); ?></td>
+                                        <td class="order-items-cell">
+                                            <span class="order-item-title">NextJS 15 SaaS Starter Boilerplate</span>
+                                            <p class="order-item-sub">Team License • Full-Stack</p>
                                         </td>
-                                        <td><span class="status-badge">Completed</span></td>
-                                        <td style="font-weight: 900;">$79.00</td>
+                                        <td><span class="status-badge dmc-status-completed"><span class="status-dot">●</span> Completed</span></td>
+                                        <td class="order-total-cell">$79.00</td>
                                         <td>
-                                            <a href="#" class="btn btn-secondary btn-sm" onclick="alert('Download started: NextJS15-Starter-v1.8.zip'); return false;">
+                                            <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="alert('Download started: NextJS15-Starter-v1.8.zip'); return false;">
                                                 ⬇️ <?php esc_html_e( 'Download ZIP', 'digital-marketplace' ); ?>
                                             </a>
                                         </td>
@@ -305,10 +305,13 @@ get_header(); ?>
 
             <!-- TAB 2: Downloads Panel -->
             <div id="panel-downloads" class="account-tab-panel" style="display: none;">
-                <div style="background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-xs);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1.5rem;">
-                        <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0;"><?php esc_html_e( 'Active Asset Licenses & Downloads', 'digital-marketplace' ); ?></h2>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);"><?php esc_html_e( 'Secure Cloud Delivery', 'digital-marketplace' ); ?></span>
+                <div class="account-panel-card">
+                    <div class="account-panel-header">
+                        <div>
+                            <h2 class="panel-header-title"><?php esc_html_e( 'Active Asset Licenses & Downloads', 'digital-marketplace' ); ?></h2>
+                            <p class="panel-header-sub"><?php esc_html_e( 'Your permanent download links and package files.', 'digital-marketplace' ); ?></p>
+                        </div>
+                        <span class="panel-header-badge"><?php esc_html_e( 'Secure Cloud Delivery', 'digital-marketplace' ); ?></span>
                     </div>
 
                     <?php
@@ -373,7 +376,7 @@ get_header(); ?>
                     ?>
 
                     <?php if ( ! empty( $dmc_downloads_list ) ) : ?>
-                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="downloads-cards-grid">
                             <?php foreach ( $dmc_downloads_list as $dl_item ) : 
                                 $ext = strtolower( $dl_item['extension'] );
                                 $file_icon = '📦';
@@ -385,27 +388,28 @@ get_header(); ?>
                                     $file_icon = '💻';
                                 }
                             ?>
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.15rem 1.25rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #fafaf9; gap: 1rem; flex-wrap: wrap;">
-                                    <div style="display: flex; align-items: center; gap: 1.1rem; min-width: 260px;">
-                                        <div style="font-size: 2rem; line-height: 1; flex-shrink: 0;"><?php echo esc_html( $file_icon ); ?></div>
+                                <div class="download-card-item">
+                                    <div class="download-item-main">
+                                        <div class="download-icon-box"><?php echo esc_html( $file_icon ); ?></div>
                                         <div>
-                                            <h4 style="font-weight: 800; font-size: 1rem; color: var(--text-main); margin: 0 0 0.25rem 0;">
+                                            <h4 class="download-title">
                                                 <?php echo esc_html( $dl_item['title'] ); ?>
                                             </h4>
-                                            <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                                                <span style="font-family: monospace; font-weight: 600; color: #475569;">
+                                            <div class="download-meta-row">
+                                                <code class="download-filename">
                                                     <?php echo esc_html( $dl_item['filename'] ); ?>
-                                                </span>
+                                                </code>
                                                 <?php if ( ! empty( $dl_item['filesize'] ) ) : ?>
-                                                    <span>• <?php echo esc_html( $dl_item['filesize'] ); ?></span>
+                                                    <span class="download-meta-bullet">•</span>
+                                                    <span class="download-filesize"><?php echo esc_html( $dl_item['filesize'] ); ?></span>
                                                 <?php endif; ?>
-                                                <span>•</span>
+                                                <span class="download-meta-bullet">•</span>
                                                 <span><?php printf( esc_html__( 'Order #%d (%s)', 'digital-marketplace' ), esc_html( $dl_item['order_id'] ), esc_html( $dl_item['order_date'] ) ); ?></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                        <a href="<?php echo esc_url( $dl_item['download_url'] ); ?>" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+                                    <div class="download-action-wrap">
+                                        <a href="<?php echo esc_url( $dl_item['download_url'] ); ?>" class="btn btn-primary btn-sm btn-download-token">
                                             ⬇️ <?php esc_html_e( 'Download File', 'digital-marketplace' ); ?>
                                         </a>
                                     </div>
@@ -415,22 +419,22 @@ get_header(); ?>
 
                     <?php elseif ( ! empty( $wc_downloads ) ) : ?>
                         <!-- WooCommerce Downloads Fallback -->
-                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="downloads-cards-grid">
                             <?php foreach ( $wc_downloads as $wc_download ) : ?>
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #fafaf9;">
-                                    <div style="display: flex; align-items: center; gap: 1rem;">
-                                        <div style="font-size: 1.75rem;">📦</div>
+                                <div class="download-card-item">
+                                    <div class="download-item-main">
+                                        <div class="download-icon-box">📦</div>
                                         <div>
-                                            <h4 style="font-weight: 800; font-size: 0.95rem; margin: 0 0 0.25rem 0;">
+                                            <h4 class="download-title">
                                                 <?php echo esc_html( $wc_download['product_name'] ); ?>
                                             </h4>
-                                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+                                            <p class="download-meta-row">
                                                 <?php echo esc_html( $wc_download['download_name'] ); ?> • 
                                                 <?php printf( esc_html__( 'Order #%s', 'digital-marketplace' ), esc_html( $wc_download['order_number'] ) ); ?>
                                             </p>
                                         </div>
                                     </div>
-                                    <a href="<?php echo esc_url( $wc_download['download_url'] ); ?>" class="btn btn-primary btn-sm">
+                                    <a href="<?php echo esc_url( $wc_download['download_url'] ); ?>" class="btn btn-primary btn-sm btn-download-token">
                                         ⬇️ <?php esc_html_e( 'Download', 'digital-marketplace' ); ?>
                                     </a>
                                 </div>
@@ -439,15 +443,15 @@ get_header(); ?>
 
                     <?php else : ?>
                         <!-- Clean Empty State -->
-                        <div style="text-align: center; padding: 3rem 1.5rem; background: #fafaf9; border: 1px dashed var(--border-subtle); border-radius: var(--radius-md);">
-                            <div style="font-size: 3rem; margin-bottom: 1rem; line-height: 1;">📂</div>
-                            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">
+                        <div class="account-empty-state">
+                            <div class="empty-state-icon">📂</div>
+                            <h3 class="empty-state-title">
                                 <?php esc_html_e( 'No Downloadable Files Available', 'digital-marketplace' ); ?>
                             </h3>
-                            <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 440px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                            <p class="empty-state-text">
                                 <?php esc_html_e( 'You do not have any active product downloads yet. Once you complete a purchase and payment is confirmed, your files and lifetime access links will appear right here.', 'digital-marketplace' ); ?>
                             </p>
-                            <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-primary btn-md" style="font-weight: 700;">
+                            <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-primary btn-md">
                                 <?php esc_html_e( 'Browse Digital Marketplace Catalog →', 'digital-marketplace' ); ?>
                             </a>
                         </div>
@@ -458,30 +462,39 @@ get_header(); ?>
 
             <!-- TAB 3: Profile Settings Panel -->
             <div id="panel-settings" class="account-tab-panel" style="display: none;">
-                <div style="max-width: 640px; background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-xs);">
-                    <h2 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1.25rem;"><?php esc_html_e( 'Account Profile & Preferences', 'digital-marketplace' ); ?></h2>
+                <div class="account-panel-card" style="max-width: 680px;">
+                    <div class="account-panel-header">
+                        <div>
+                            <h2 class="panel-header-title"><?php esc_html_e( 'Account Profile & Preferences', 'digital-marketplace' ); ?></h2>
+                            <p class="panel-header-sub"><?php esc_html_e( 'Manage your buyer contact info and display preferences.', 'digital-marketplace' ); ?></p>
+                        </div>
+                    </div>
                     
-                    <form method="post" action="">
+                    <form method="post" action="" class="account-settings-form">
                         <?php wp_nonce_field( 'marketplace_update_profile', 'marketplace_profile_nonce' ); ?>
                         
                         <div class="form-group">
                             <label class="form-label"><?php esc_html_e( 'Display Name', 'digital-marketplace' ); ?></label>
                             <input type="text" class="form-control" value="<?php echo esc_attr( $current_user->display_name ); ?>" />
+                            <span class="field-hint"><?php esc_html_e( 'Used across download licenses and order invoices.', 'digital-marketplace' ); ?></span>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label"><?php esc_html_e( 'Email Address', 'digital-marketplace' ); ?></label>
                             <input type="email" class="form-control" value="<?php echo esc_attr( $current_user->user_email ); ?>" />
+                            <span class="field-hint"><?php esc_html_e( 'Instant download receipts and crypto confirmation alerts are delivered here.', 'digital-marketplace' ); ?></span>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label"><?php esc_html_e( 'Registered Username', 'digital-marketplace' ); ?></label>
-                            <input type="text" class="form-control" value="<?php echo esc_attr( $current_user->user_login ); ?>" readonly style="background-color: #f5f5f4;" />
+                            <input type="text" class="form-control form-control-readonly" value="<?php echo esc_attr( $current_user->user_login ); ?>" readonly />
                         </div>
 
-                        <button type="button" class="btn btn-primary btn-sm" onclick="alert('Profile changes saved successfully.');">
-                            <?php esc_html_e( 'Save Profile Changes', 'digital-marketplace' ); ?>
-                        </button>
+                        <div class="form-actions-row">
+                            <button type="button" class="btn btn-primary btn-md" onclick="alert('Profile changes saved successfully.');">
+                                <?php esc_html_e( 'Save Profile Changes', 'digital-marketplace' ); ?>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

@@ -35,13 +35,13 @@ class DMC_Checkout {
         ?>
         <div id="dmc-cart-wrapper" class="dmc-cart-container" data-item-count="<?php echo esc_attr( $item_count ); ?>">
             <?php if ( empty( $cart ) ) : ?>
-                <div class="cart-items-card" style="text-align: center; padding: 4rem 2rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🛍️</div>
-                    <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
+                <div class="cart-items-card dmc-cart-empty">
+                    <div class="dmc-empty-badge">🛍️</div>
+                    <h2 class="dmc-empty-title">
                         <?php esc_html_e( 'Your shopping cart is empty', 'digital-marketplace-commerce' ); ?>
                     </h2>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">
-                        <?php esc_html_e( 'Explore our digital marketplace for UI kits, developer stacks, and fonts.', 'digital-marketplace-commerce' ); ?>
+                    <p class="dmc-empty-desc">
+                        <?php esc_html_e( 'Explore our digital marketplace for UI kits, developer stacks, design systems, and software templates.', 'digital-marketplace-commerce' ); ?>
                     </p>
                     <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-primary btn-lg">
                         <?php esc_html_e( 'Explore Products Catalog →', 'digital-marketplace-commerce' ); ?>
@@ -51,9 +51,9 @@ class DMC_Checkout {
                 <div class="cart-page-layout">
                     <!-- Left: Real Dynamic Cart Items -->
                     <div class="cart-items-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 0.5rem;">
-                            <span style="font-weight: 800; font-size: 0.9rem;"><?php esc_html_e( 'Product Item', 'digital-marketplace-commerce' ); ?></span>
-                            <span style="font-weight: 800; font-size: 0.9rem;"><?php esc_html_e( 'Price / Quantity', 'digital-marketplace-commerce' ); ?></span>
+                        <div class="cart-table-header">
+                            <span class="cart-th-desc"><?php esc_html_e( 'Product Asset', 'digital-marketplace-commerce' ); ?></span>
+                            <span class="cart-th-price"><?php esc_html_e( 'Quantity & Subtotal', 'digital-marketplace-commerce' ); ?></span>
                         </div>
 
                         <div id="dmc-cart-items-list">
@@ -67,27 +67,28 @@ class DMC_Checkout {
                                         <div class="cart-item-thumb">
                                             <img src="<?php echo esc_url( $item['image'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>" />
                                         </div>
-                                        <div>
-                                            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;">
+                                        <div class="cart-item-meta">
+                                            <h3 class="cart-item-title">
                                                 <a href="<?php echo esc_url( get_permalink( $pid ) ); ?>"><?php echo esc_html( $item['title'] ); ?></a>
                                             </h3>
-                                            <p style="font-size: 0.775rem; color: var(--text-muted);">
-                                                <?php echo esc_html( $item['format'] ); ?> • $<?php echo esc_html( number_format( $price, 2 ) ); ?> <?php esc_html_e( 'each', 'digital-marketplace-commerce' ); ?>
-                                            </p>
-                                            <button type="button" class="dmc-cart-remove-btn" data-product-id="<?php echo esc_attr( $pid ); ?>" style="background:none; border:none; color:#ef4444; font-size:0.75rem; font-weight:600; cursor:pointer; padding:0; margin-top:0.35rem;">
-                                                ✕ <?php esc_html_e( 'Remove', 'digital-marketplace-commerce' ); ?>
+                                            <div class="cart-item-badges">
+                                                <span class="cart-badge-format"><?php echo esc_html( $item['format'] ); ?></span>
+                                                <span class="cart-unit-price">$<?php echo esc_html( number_format( $price, 2 ) ); ?> <?php esc_html_e( 'each', 'digital-marketplace-commerce' ); ?></span>
+                                            </div>
+                                            <button type="button" class="dmc-cart-remove-btn" data-product-id="<?php echo esc_attr( $pid ); ?>">
+                                                ✕ <?php esc_html_e( 'Remove item', 'digital-marketplace-commerce' ); ?>
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                                    <div class="cart-item-controls">
                                         <div class="qty-stepper dmc-qty-stepper">
-                                            <button type="button" class="qty-btn qty-btn-minus dmc-qty-minus">-</button>
+                                            <button type="button" class="qty-btn qty-btn-minus dmc-qty-minus" aria-label="<?php esc_attr_e( 'Decrease quantity', 'digital-marketplace-commerce' ); ?>">-</button>
                                             <span class="qty-val dmc-qty-val"><?php echo esc_html( $qty ); ?></span>
-                                            <button type="button" class="qty-btn qty-btn-plus dmc-qty-plus">+</button>
+                                            <button type="button" class="qty-btn qty-btn-plus dmc-qty-plus" aria-label="<?php esc_attr_e( 'Increase quantity', 'digital-marketplace-commerce' ); ?>">+</button>
                                         </div>
-                                        <div style="text-align: right; min-width: 75px;">
-                                            <span class="cart-item-subtotal dmc-row-subtotal" style="font-weight: 800; font-size: 1.05rem;">
+                                        <div class="cart-item-subtotal-box">
+                                            <span class="cart-item-subtotal dmc-row-subtotal">
                                                 $<?php echo esc_html( number_format( $line_subtotal, 2 ) ); ?>
                                             </span>
                                         </div>
@@ -96,63 +97,63 @@ class DMC_Checkout {
                             <?php endforeach; ?>
                         </div>
 
-                        <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div class="cart-table-footer">
                             <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-secondary btn-sm">
                                 ← <?php esc_html_e( 'Continue Shopping', 'digital-marketplace-commerce' ); ?>
                             </a>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">
-                                ⚡ <?php esc_html_e( 'Direct peer-to-peer crypto fulfillment.', 'digital-marketplace-commerce' ); ?>
+                            <span class="cart-trust-note">
+                                ⚡ <?php esc_html_e( 'Direct peer-to-peer crypto fulfillment with zero fees.', 'digital-marketplace-commerce' ); ?>
                             </span>
                         </div>
                     </div>
 
                     <!-- Right: Dynamic Order Summary -->
                     <div>
-                        <div class="summary-card">
-                            <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--text-main);">
+                        <div class="summary-card dmc-summary-card">
+                            <h2 class="summary-card-title">
                                 <?php esc_html_e( 'Order Summary', 'digital-marketplace-commerce' ); ?>
                             </h2>
 
                             <!-- Coupon Box -->
-                            <form id="marketplace-coupon-form" style="margin-bottom: 1.25rem;">
-                                <label for="coupon-input" class="form-label"><?php esc_html_e( 'Discount / Promo Code:', 'digital-marketplace-commerce' ); ?></label>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <input id="coupon-input" type="text" class="form-control" placeholder="e.g. WELCOME10" style="text-transform: uppercase;" />
-                                    <button type="submit" class="btn btn-secondary btn-sm" style="white-space: nowrap;">
+                            <form id="marketplace-coupon-form" class="dmc-coupon-form">
+                                <label for="coupon-input" class="form-label"><?php esc_html_e( 'Promo or Referral Code', 'digital-marketplace-commerce' ); ?></label>
+                                <div class="coupon-input-group">
+                                    <input id="coupon-input" type="text" class="form-control coupon-input" placeholder="<?php esc_attr_e( 'e.g. WELCOME10', 'digital-marketplace-commerce' ); ?>" />
+                                    <button type="submit" class="btn btn-secondary btn-sm btn-apply-coupon">
                                         <?php esc_html_e( 'Apply', 'digital-marketplace-commerce' ); ?>
                                     </button>
                                 </div>
-                                <p id="coupon-feedback" style="font-size: 0.75rem; margin-top: 0.35rem;"></p>
+                                <p id="coupon-feedback" class="coupon-feedback-msg"></p>
                             </form>
 
-                            <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem;">
-                                <div style="display: flex; justify-content: space-between;">
-                                    <span style="color: var(--text-muted);"><?php esc_html_e( 'Subtotal', 'digital-marketplace-commerce' ); ?></span>
-                                    <span id="cart-display-subtotal" style="font-weight: 700;">$<?php echo esc_html( number_format( $subtotal, 2 ) ); ?></span>
+                            <div class="summary-breakdown-list">
+                                <div class="summary-row">
+                                    <span class="summary-label"><?php esc_html_e( 'Subtotal', 'digital-marketplace-commerce' ); ?></span>
+                                    <span id="cart-display-subtotal" class="summary-val">$<?php echo esc_html( number_format( $subtotal, 2 ) ); ?></span>
                                 </div>
-                                <div id="cart-discount-row" style="display: none; justify-content: space-between; color: #059669;">
-                                    <span><?php esc_html_e( 'Promo Discount', 'digital-marketplace-commerce' ); ?></span>
-                                    <span id="cart-discount-val">-$0.00</span>
+                                <div id="cart-discount-row" class="summary-row summary-discount-row" style="display: none;">
+                                    <span class="summary-label"><?php esc_html_e( 'Promo Discount', 'digital-marketplace-commerce' ); ?></span>
+                                    <span id="cart-discount-val" class="summary-val">-$0.00</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between;">
-                                    <span style="color: var(--text-muted);"><?php esc_html_e( 'Estimated Tax (8%)', 'digital-marketplace-commerce' ); ?></span>
-                                    <span id="cart-display-tax" style="font-weight: 700;">$<?php echo esc_html( number_format( $tax, 2 ) ); ?></span>
+                                <div class="summary-row">
+                                    <span class="summary-label"><?php esc_html_e( 'Estimated Tax (8%)', 'digital-marketplace-commerce' ); ?></span>
+                                    <span id="cart-display-tax" class="summary-val">$<?php echo esc_html( number_format( $tax, 2 ) ); ?></span>
                                 </div>
-                                <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 900;">
-                                    <span><?php esc_html_e( 'Total', 'digital-marketplace-commerce' ); ?></span>
-                                    <span id="cart-display-total">$<?php echo esc_html( number_format( $total, 2 ) ); ?></span>
+                                <div class="summary-row summary-total-row">
+                                    <span class="summary-total-label"><?php esc_html_e( 'Total', 'digital-marketplace-commerce' ); ?></span>
+                                    <span id="cart-display-total" class="summary-total-val">$<?php echo esc_html( number_format( $total, 2 ) ); ?></span>
                                 </div>
                             </div>
 
-                            <div style="margin-top: 1.5rem;">
-                                <a href="<?php echo esc_url( home_url( '/checkout' ) ); ?>" class="btn btn-primary btn-block btn-lg">
+                            <div class="summary-cta-wrap">
+                                <a href="<?php echo esc_url( home_url( '/checkout' ) ); ?>" class="btn btn-primary btn-block btn-lg btn-checkout-cta">
                                     <?php esc_html_e( 'Proceed to Checkout →', 'digital-marketplace-commerce' ); ?>
                                 </a>
                             </div>
 
-                            <div style="margin-top: 1.25rem; padding: 0.85rem; background-color: var(--bg-subtle); border-radius: var(--radius-md); font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;">
-                                <strong>🪙 <?php esc_html_e( 'Crypto Commerce Active:', 'digital-marketplace-commerce' ); ?></strong>
-                                <?php esc_html_e( 'Orders are stored in the DMC Orders system with cryptocurrency settlement instructions.', 'digital-marketplace-commerce' ); ?>
+                            <div class="summary-guarantee-box">
+                                <div class="guarantee-badge">🪙 <strong><?php esc_html_e( 'Crypto Commerce Active', 'digital-marketplace-commerce' ); ?></strong></div>
+                                <p><?php esc_html_e( 'Zero processing markups. Direct blockchain wallet settlement with cryptographic validation.', 'digital-marketplace-commerce' ); ?></p>
                             </div>
                         </div>
                     </div>
@@ -181,16 +182,16 @@ class DMC_Checkout {
         if ( empty( $cart ) ) {
             ob_start();
             ?>
-            <div class="checkout-form-card" style="text-align: center; padding: 4rem 2rem;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🛒</div>
-                <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem;">
-                    <?php esc_html_e( 'No items to checkout', 'digital-marketplace-commerce' ); ?>
+            <div class="checkout-form-card dmc-checkout-empty">
+                <div class="dmc-empty-badge">🛒</div>
+                <h2 class="dmc-empty-title">
+                    <?php esc_html_e( 'No items in checkout', 'digital-marketplace-commerce' ); ?>
                 </h2>
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">
-                    <?php esc_html_e( 'Please add one or more digital products to your cart before proceeding to checkout.', 'digital-marketplace-commerce' ); ?>
+                <p class="dmc-empty-desc">
+                    <?php esc_html_e( 'Please add one or more digital products or developer templates to your cart before proceeding.', 'digital-marketplace-commerce' ); ?>
                 </p>
                 <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-primary btn-lg">
-                    <?php esc_html_e( 'Browse Products →', 'digital-marketplace-commerce' ); ?>
+                    <?php esc_html_e( 'Browse Products Catalog →', 'digital-marketplace-commerce' ); ?>
                 </a>
             </div>
             <?php
@@ -212,11 +213,15 @@ class DMC_Checkout {
             
             <!-- Left: Checkout Form with Nonce -->
             <div class="checkout-form-card">
-                <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem;">
-                    <?php esc_html_e( '1. Customer Details', 'digital-marketplace-commerce' ); ?>
-                </h2>
+                <div class="checkout-step-header">
+                    <span class="step-num">1</span>
+                    <div>
+                        <h2 class="step-title"><?php esc_html_e( 'Customer & Delivery Information', 'digital-marketplace-commerce' ); ?></h2>
+                        <p class="step-subtitle"><?php esc_html_e( 'Your contact info for license generation, order tracking, and file dispatch.', 'digital-marketplace-commerce' ); ?></p>
+                    </div>
+                </div>
 
-                <form id="dmc-checkout-form" method="post" action="">
+                <form id="dmc-checkout-form" method="post" action="" class="dmc-checkout-form">
                     <input type="hidden" name="dmc_action" value="place_order" />
                     <?php wp_nonce_field( 'dmc_process_checkout', 'dmc_checkout_nonce' ); ?>
 
@@ -246,102 +251,121 @@ class DMC_Checkout {
                     <div class="form-group">
                         <label for="dmc_email" class="form-label"><?php esc_html_e( 'Delivery Email Address *', 'digital-marketplace-commerce' ); ?></label>
                         <input type="email" id="dmc_email" name="dmc_email" class="form-control" required value="<?php echo esc_attr( $default_email ); ?>" placeholder="alex.rivera@example.com" />
-                        <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.25rem;">
-                            <?php esc_html_e( 'Order ID, payment confirmation, and digital download links will be sent here.', 'digital-marketplace-commerce' ); ?>
-                        </small>
+                        <span class="field-hint">
+                            <?php esc_html_e( 'Order ID, cryptographically signed invoice, and permanent download links will be delivered here.', 'digital-marketplace-commerce' ); ?>
+                        </span>
                     </div>
 
                     <!-- Payment Method: Crypto -->
-                    <h2 style="font-size: 1.25rem; font-weight: 800; margin: 2rem 0 1.25rem; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
-                        <?php esc_html_e( '2. Payment Method: Cryptocurrency', 'digital-marketplace-commerce' ); ?>
-                    </h2>
-
-                    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem;">
-                        <p style="font-size: 0.85rem; color: #334155; margin-bottom: 1rem; line-height: 1.5;">
-                            <?php esc_html_e( 'Select the cryptocurrency network you wish to send payment with:', 'digital-marketplace-commerce' ); ?>
-                        </p>
-
-                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <label style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border: 2px solid var(--color-primary); border-radius: var(--radius-md); background: #fff; cursor: pointer;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <input type="radio" name="dmc_crypto_coin" value="Bitcoin (BTC)" checked />
-                                    <span style="font-weight: 700; font-size: 0.9rem;">₿ Bitcoin (BTC)</span>
-                                </div>
-                                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;"><?php echo esc_html( substr( $wallet_btc, 0, 10 ) . '...' . substr( $wallet_btc, -6 ) ); ?></span>
-                            </label>
-
-                            <label style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #fff; cursor: pointer;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <input type="radio" name="dmc_crypto_coin" value="Ethereum (ETH)" />
-                                    <span style="font-weight: 700; font-size: 0.9rem;">Ξ Ethereum (ETH)</span>
-                                </div>
-                                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;"><?php echo esc_html( substr( $wallet_eth, 0, 8 ) . '...' . substr( $wallet_eth, -6 ) ); ?></span>
-                            </label>
-
-                            <label style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #fff; cursor: pointer;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <input type="radio" name="dmc_crypto_coin" value="Tether (USDT)" />
-                                    <span style="font-weight: 700; font-size: 0.9rem;">₮ Tether (USDT)</span>
-                                </div>
-                                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;"><?php echo esc_html( substr( $wallet_usdt, 0, 8 ) . '...' . substr( $wallet_usdt, -6 ) ); ?></span>
-                            </label>
+                    <div class="checkout-step-header checkout-step-payment">
+                        <span class="step-num">2</span>
+                        <div>
+                            <h2 class="step-title"><?php esc_html_e( 'Payment Method: Cryptocurrency', 'digital-marketplace-commerce' ); ?></h2>
+                            <p class="step-subtitle"><?php esc_html_e( 'Select the blockchain network you wish to send payment with:', 'digital-marketplace-commerce' ); ?></p>
                         </div>
                     </div>
 
-                    <div style="margin-top: 1.75rem;">
-                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <div class="crypto-selection-grid">
+                        <label class="crypto-option-card">
+                            <input type="radio" name="dmc_crypto_coin" value="Bitcoin (BTC)" checked class="crypto-radio" />
+                            <div class="crypto-card-content">
+                                <div class="crypto-coin-header">
+                                    <span class="crypto-coin-icon">₿</span>
+                                    <div>
+                                        <strong class="crypto-coin-name">Bitcoin (BTC)</strong>
+                                        <span class="crypto-network-tag">Mainnet</span>
+                                    </div>
+                                </div>
+                                <code class="crypto-address-preview"><?php echo esc_html( substr( $wallet_btc, 0, 10 ) . '...' . substr( $wallet_btc, -6 ) ); ?></code>
+                            </div>
+                        </label>
+
+                        <label class="crypto-option-card">
+                            <input type="radio" name="dmc_crypto_coin" value="Ethereum (ETH)" class="crypto-radio" />
+                            <div class="crypto-card-content">
+                                <div class="crypto-coin-header">
+                                    <span class="crypto-coin-icon">Ξ</span>
+                                    <div>
+                                        <strong class="crypto-coin-name">Ethereum (ETH)</strong>
+                                        <span class="crypto-network-tag">ERC-20</span>
+                                    </div>
+                                </div>
+                                <code class="crypto-address-preview"><?php echo esc_html( substr( $wallet_eth, 0, 8 ) . '...' . substr( $wallet_eth, -6 ) ); ?></code>
+                            </div>
+                        </label>
+
+                        <label class="crypto-option-card">
+                            <input type="radio" name="dmc_crypto_coin" value="Tether (USDT)" class="crypto-radio" />
+                            <div class="crypto-card-content">
+                                <div class="crypto-coin-header">
+                                    <span class="crypto-coin-icon">₮</span>
+                                    <div>
+                                        <strong class="crypto-coin-name">Tether (USDT)</strong>
+                                        <span class="crypto-network-tag">TRC-20 / ERC-20</span>
+                                    </div>
+                                </div>
+                                <code class="crypto-address-preview"><?php echo esc_html( substr( $wallet_usdt, 0, 8 ) . '...' . substr( $wallet_usdt, -6 ) ); ?></code>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="checkout-submit-wrap">
+                        <button type="submit" class="btn btn-primary btn-block btn-lg btn-place-order">
                             🔒 <?php printf( esc_html__( 'Place Order & Pay with Crypto ($%s)', 'digital-marketplace-commerce' ), esc_html( number_format( $total, 2 ) ) ); ?>
                         </button>
+                        <p class="checkout-submit-guarantee">
+                            🛡️ <?php esc_html_e( 'Direct peer-to-peer settlement. Order reference and receiving wallet displayed immediately.', 'digital-marketplace-commerce' ); ?>
+                        </p>
                     </div>
                 </form>
             </div>
 
             <!-- Right: Real Cart Order Summary -->
             <div>
-                <div class="summary-card">
-                    <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--text-main);">
+                <div class="summary-card dmc-summary-card">
+                    <h2 class="summary-card-title">
                         <?php esc_html_e( 'Order Review', 'digital-marketplace-commerce' ); ?>
                     </h2>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.85rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div class="review-items-list">
                         <?php foreach ( $cart as $item ) : ?>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                            <div class="review-item-row">
                                 <div>
-                                    <span style="font-weight: 700;"><?php echo esc_html( $item['title'] ); ?></span>
-                                    <p style="font-size: 0.75rem; color: var(--text-muted);">Qty: <?php echo esc_html( $item['quantity'] ); ?> • <?php echo esc_html( $item['format'] ); ?></p>
+                                    <span class="review-item-title"><?php echo esc_html( $item['title'] ); ?></span>
+                                    <p class="review-item-meta">Qty: <?php echo esc_html( $item['quantity'] ); ?> • <?php echo esc_html( $item['format'] ); ?></p>
                                 </div>
-                                <span style="font-weight: 700;">$<?php echo esc_html( number_format( $item['price'] * $item['quantity'], 2 ) ); ?></span>
+                                <span class="review-item-price">$<?php echo esc_html( number_format( $item['price'] * $item['quantity'], 2 ) ); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--text-muted);"><?php esc_html_e( 'Subtotal', 'digital-marketplace-commerce' ); ?></span>
-                            <span style="font-weight: 700;">$<?php echo esc_html( number_format( $subtotal, 2 ) ); ?></span>
+                    <div class="summary-breakdown-list">
+                        <div class="summary-row">
+                            <span class="summary-label"><?php esc_html_e( 'Subtotal', 'digital-marketplace-commerce' ); ?></span>
+                            <span class="summary-val">$<?php echo esc_html( number_format( $subtotal, 2 ) ); ?></span>
                         </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--text-muted);"><?php esc_html_e( 'Tax (8%)', 'digital-marketplace-commerce' ); ?></span>
-                            <span style="font-weight: 700;">$<?php echo esc_html( number_format( $tax, 2 ) ); ?></span>
+                        <div class="summary-row">
+                            <span class="summary-label"><?php esc_html_e( 'Estimated Tax (8%)', 'digital-marketplace-commerce' ); ?></span>
+                            <span class="summary-val">$<?php echo esc_html( number_format( $tax, 2 ) ); ?></span>
                         </div>
-                        <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 900;">
-                            <span><?php esc_html_e( 'Total Due', 'digital-marketplace-commerce' ); ?></span>
-                            <span>$<?php echo esc_html( number_format( $total, 2 ) ); ?></span>
+                        <div class="summary-row summary-total-row">
+                            <span class="summary-total-label"><?php esc_html_e( 'Total Due', 'digital-marketplace-commerce' ); ?></span>
+                            <span class="summary-total-val">$<?php echo esc_html( number_format( $total, 2 ) ); ?></span>
                         </div>
                     </div>
 
-                    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
-                        <div style="display: flex; align-items: center; gap: 0.4rem;">
-                            <span style="color: var(--color-success);">✓</span>
-                            <span><?php esc_html_e( 'Zero intermediary payment processing fees', 'digital-marketplace-commerce' ); ?></span>
+                    <div class="review-perks-list">
+                        <div class="review-perk-item">
+                            <span class="perk-icon">✓</span>
+                            <span><?php esc_html_e( 'Zero payment intermediary processing fees', 'digital-marketplace-commerce' ); ?></span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.4rem;">
-                            <span style="color: var(--color-success);">✓</span>
-                            <span><?php esc_html_e( 'Instant Order ID generated on submit', 'digital-marketplace-commerce' ); ?></span>
+                        <div class="review-perk-item">
+                            <span class="perk-icon">✓</span>
+                            <span><?php esc_html_e( 'Instant cryptographic Order ID generated', 'digital-marketplace-commerce' ); ?></span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.4rem;">
-                            <span style="color: var(--color-success);">✓</span>
-                            <span><?php esc_html_e( 'Payment instructions emailed immediately', 'digital-marketplace-commerce' ); ?></span>
+                        <div class="review-perk-item">
+                            <span class="perk-icon">✓</span>
+                            <span><?php esc_html_e( 'Payment instructions dispatched to email', 'digital-marketplace-commerce' ); ?></span>
                         </div>
                     </div>
                 </div>
@@ -661,56 +685,56 @@ class DMC_Checkout {
 
         ob_start();
         ?>
-        <div class="checkout-form-card" style="max-width: 780px; margin: 0 auto; border: 2px solid var(--color-primary);">
+        <div class="checkout-confirmation-card dmc-order-confirmation">
             
-            <div style="text-align: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-                <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--color-accent-bg); font-size: 1.75rem; margin-bottom: 0.75rem;">
+            <div class="confirmation-header">
+                <div class="confirmation-icon-badge">
                     🪙
                 </div>
-                <h1 style="font-size: 1.75rem; font-weight: 900; letter-spacing: -0.02em; color: var(--text-main); margin-bottom: 0.25rem;">
-                    <?php esc_html_e( 'Order Placed — Payment Required', 'digital-marketplace-commerce' ); ?>
+                <h1 class="confirmation-title">
+                    <?php esc_html_e( 'Order Placed — Crypto Payment Pending', 'digital-marketplace-commerce' ); ?>
                 </h1>
-                <p style="font-size: 0.95rem; color: var(--text-muted);">
+                <p class="confirmation-subtitle">
                     <?php printf( esc_html__( 'Order Reference: #%d', 'digital-marketplace-commerce' ), esc_html( $order_id ) ); ?> • 
-                    <span class="status-badge" style="background:#fef3c7; color:#92400e;"><?php echo esc_html( $status ); ?></span>
+                    <span class="status-badge status-badge-pending"><?php echo esc_html( $status ); ?></span>
                 </p>
             </div>
 
             <!-- Prominent Warning Notice -->
-            <div style="background-color: #fef3c7; border-left: 5px solid var(--color-accent); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 2rem;">
-                <p style="font-size: 1rem; font-weight: 800; color: #92400e; margin-bottom: 0.5rem;">
-                    ⚠️ <?php esc_html_e( 'Important Payment Action:', 'digital-marketplace-commerce' ); ?>
+            <div class="confirmation-alert-box">
+                <p class="alert-box-heading">
+                    ⚠️ <?php esc_html_e( 'Important Settlement Action:', 'digital-marketplace-commerce' ); ?>
                 </p>
-                <p style="font-size: 0.925rem; line-height: 1.6; color: #78350f; margin: 0;">
+                <p class="alert-box-body">
                     <?php 
                     /* translators: %d: Order ID */
-                    printf( esc_html__( 'Send the exact total shown to this address, then wait for confirmation. Do not close this page until you\'ve saved your Order ID: #%d.', 'digital-marketplace-commerce' ), esc_html( $order_id ) ); 
+                    printf( esc_html__( 'Transfer the exact total shown below to the specified recipient address. Please bookmark this page or record your Order ID: #%d for tracking.', 'digital-marketplace-commerce' ), esc_html( $order_id ) ); 
                     ?>
                 </p>
             </div>
 
             <!-- Payment Details Box -->
-            <div style="background-color: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1rem;">
+            <div class="confirmation-details-box">
+                <div class="confirmation-details-header">
                     <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;"><?php esc_html_e( 'Selected Network / Coin', 'digital-marketplace-commerce' ); ?></span>
-                        <h3 style="font-size: 1.15rem; font-weight: 800;"><?php echo esc_html( $coin ); ?></h3>
+                        <span class="details-label"><?php esc_html_e( 'Selected Network / Coin', 'digital-marketplace-commerce' ); ?></span>
+                        <h3 class="details-coin-val"><?php echo esc_html( $coin ); ?></h3>
                     </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;"><?php esc_html_e( 'Exact Total Due', 'digital-marketplace-commerce' ); ?></span>
-                        <h2 style="font-size: 1.75rem; font-weight: 900; color: var(--text-main);">$<?php echo esc_html( number_format( $total, 2 ) ); ?></h2>
+                    <div class="details-total-wrap">
+                        <span class="details-label"><?php esc_html_e( 'Exact Total Due', 'digital-marketplace-commerce' ); ?></span>
+                        <h2 class="details-total-val">$<?php echo esc_html( number_format( $total, 2 ) ); ?></h2>
                     </div>
                 </div>
 
-                <div>
-                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem;">
+                <div class="confirmation-wallet-wrap">
+                    <label class="details-label">
                         <?php esc_html_e( 'Send Payment to this Wallet Address:', 'digital-marketplace-commerce' ); ?>
                     </label>
-                    <div style="display: flex; gap: 0.5rem; align-items: center; background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.5rem 0.75rem;">
-                        <code id="dmc-wallet-copy-text" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); word-break: break-all; flex: 1;">
+                    <div class="wallet-copy-bar">
+                        <code id="dmc-wallet-copy-text" class="wallet-copy-code">
                             <?php echo esc_html( $wallet_address ); ?>
                         </code>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('<?php echo esc_js( $wallet_address ); ?>'); alert('Wallet address copied to clipboard!');">
+                        <button type="button" class="btn btn-secondary btn-sm btn-copy-wallet" onclick="navigator.clipboard.writeText('<?php echo esc_js( $wallet_address ); ?>'); alert('Wallet address copied to clipboard!');">
                             📋 <?php esc_html_e( 'Copy', 'digital-marketplace-commerce' ); ?>
                         </button>
                     </div>
@@ -718,69 +742,69 @@ class DMC_Checkout {
             </div>
 
             <!-- Customer Notification -->
-            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+            <div class="confirmation-notice-wrap">
                 <p>
-                    ✉️ <?php printf( esc_html__( 'A payment confirmation and invoice receipt has been dispatched to %s.', 'digital-marketplace-commerce' ), '<strong>' . esc_html( $customer_email ) . '</strong>' ); ?>
+                    ✉️ <?php printf( esc_html__( 'A payment confirmation and cryptographic invoice receipt has been dispatched to %s.', 'digital-marketplace-commerce' ), '<strong>' . esc_html( $customer_email ) . '</strong>' ); ?>
                 </p>
-                <p style="margin-top: 0.5rem;">
-                    🛡️ <?php esc_html_e( 'Please note: Download links will become available once your cryptocurrency transaction is manually verified on the blockchain and our team marks your order as Completed in your Account Dashboard.', 'digital-marketplace-commerce' ); ?>
+                <p class="notice-security-note">
+                    🛡️ <?php esc_html_e( 'Direct license and file downloads activate automatically as soon as transaction validation completes on the blockchain and the order is marked Completed.', 'digital-marketplace-commerce' ); ?>
                 </p>
             </div>
 
             <!-- Items Purchased Summary -->
-            <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem;">
-                <?php esc_html_e( 'Items in this Order:', 'digital-marketplace-commerce' ); ?>
+            <h3 class="confirmation-items-heading">
+                <?php esc_html_e( 'Purchased Digital Items:', 'digital-marketplace-commerce' ); ?>
             </h3>
-            <div style="border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 2rem;">
+            <div class="confirmation-items-card">
                 <?php if ( is_array( $items ) ) : ?>
                     <?php foreach ( $items as $it ) : 
                         $pid       = ! empty( $it['id'] ) ? absint( $it['id'] ) : 0;
                         $has_file  = $pid && class_exists( 'DMC_Downloads' ) ? DMC_Downloads::has_download_file( $pid ) : false;
                         $file_info = $pid && class_exists( 'DMC_Downloads' ) ? DMC_Downloads::get_product_file_info( $pid ) : null;
                     ?>
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem;">
+                        <div class="confirmation-item-row">
                             <div>
-                                <strong><?php echo esc_html( $it['title'] ); ?></strong>
-                                <span style="color: var(--text-muted); margin-left: 0.5rem;">x<?php echo esc_html( $it['quantity'] ); ?></span>
+                                <strong class="confirmation-item-title"><?php echo esc_html( $it['title'] ); ?></strong>
+                                <span class="confirmation-item-qty">x<?php echo esc_html( $it['quantity'] ); ?></span>
                                 
-                                <div style="margin-top: 4px;">
+                                <div class="confirmation-item-status-note">
                                     <?php if ( $has_file && $file_info ) : ?>
-                                        <span style="display: inline-flex; align-items: center; gap: 4px; color: #059669; font-weight: 700; font-size: 0.75rem;">
-                                            ✓ <?php esc_html_e( 'Digital file package attached & ready', 'digital-marketplace-commerce' ); ?>
+                                        <span class="file-status-ready">
+                                            ✓ <?php esc_html_e( 'Digital package ready for download', 'digital-marketplace-commerce' ); ?>
                                         </span>
                                         <?php if ( $status === DMC_Post_Type::STATUS_COMPLETED && class_exists( 'DMC_Downloads' ) ) : 
                                             $dl_url = DMC_Downloads::get_download_url( $order_id, $pid );
                                             if ( $dl_url ) : ?>
-                                                <div style="margin-top: 6px;">
-                                                    <a href="<?php echo esc_url( $dl_url ); ?>" class="btn btn-primary btn-sm" style="padding: 4px 10px; font-size: 0.75rem;">
-                                                        ⬇️ <?php esc_html_e( 'Download File', 'digital-marketplace-commerce' ); ?>
+                                                <div class="file-download-btn-wrap">
+                                                    <a href="<?php echo esc_url( $dl_url ); ?>" class="btn btn-primary btn-sm">
+                                                        ⬇️ <?php esc_html_e( 'Download Package', 'digital-marketplace-commerce' ); ?>
                                                     </a>
                                                 </div>
                                             <?php endif; ?>
                                         <?php else : ?>
-                                            <span style="display: block; font-size: 0.7rem; color: var(--text-muted);">
-                                                (<?php esc_html_e( 'Download link activates once order is verified & marked Completed', 'digital-marketplace-commerce' ); ?>)
+                                            <span class="file-status-pending">
+                                                (<?php esc_html_e( 'Link unlocks when transaction confirmation completes', 'digital-marketplace-commerce' ); ?>)
                                             </span>
                                         <?php endif; ?>
                                     <?php else : ?>
-                                        <span style="display: inline-flex; align-items: center; gap: 4px; color: #d97706; font-weight: 700; font-size: 0.75rem;">
+                                        <span class="file-status-none">
                                             ⚠️ <?php esc_html_e( 'No downloadable file currently attached to this product', 'digital-marketplace-commerce' ); ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <span style="font-weight: 700;">$<?php echo esc_html( number_format( $it['price'] * $it['quantity'], 2 ) ); ?></span>
+                            <span class="confirmation-item-price">$<?php echo esc_html( number_format( $it['price'] * $it['quantity'], 2 ) ); ?></span>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
 
-            <div style="display: flex; gap: 1rem; justify-content: center;">
+            <div class="confirmation-action-buttons">
                 <a href="<?php echo esc_url( home_url( '/account' ) ); ?>" class="btn btn-primary btn-lg">
-                    <?php esc_html_e( 'View My Account Dashboard →', 'digital-marketplace-commerce' ); ?>
+                    <?php esc_html_e( 'Go to Account Dashboard →', 'digital-marketplace-commerce' ); ?>
                 </a>
                 <a href="<?php echo esc_url( home_url( '/products' ) ); ?>" class="btn btn-secondary btn-lg">
-                    <?php esc_html_e( 'Back to Catalog', 'digital-marketplace-commerce' ); ?>
+                    <?php esc_html_e( 'Explore More Products', 'digital-marketplace-commerce' ); ?>
                 </a>
             </div>
 
