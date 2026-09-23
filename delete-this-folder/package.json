@@ -1,0 +1,9 @@
+{
+  "name": "delete-this-folder-stub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Disposable placeholder app for build environment",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

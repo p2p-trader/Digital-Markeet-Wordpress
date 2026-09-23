@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-define( 'DIGITAL_MARKETPLACE_VERSION', '1.0.0' );
+define( 'DIGITAL_MARKETPLACE_VERSION', '4.0.0' );
 
 /**
  * Theme Setup
@@ -95,9 +95,11 @@ function digital_marketplace_scripts() {
 
     // Pass dynamic localized parameters to frontend JS.
     wp_localize_script( 'digital-marketplace-js', 'digitalMarketplaceData', array(
-        'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-        'nonce'    => wp_create_nonce( 'digital_marketplace_nonce' ),
+        'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
+        'nonce'          => wp_create_nonce( 'digital_marketplace_nonce' ),
         'isUserLoggedIn' => is_user_logged_in(),
+        'homeUrl'        => home_url( '/' ),
+        'catalogUrl'     => get_post_type_archive_link( 'product' ) ?: home_url( '/products' ),
     ) );
 }
 add_action( 'wp_enqueue_scripts', 'digital_marketplace_scripts' );
@@ -167,6 +169,23 @@ function digital_marketplace_register_cpt() {
             'rewrite'           => array( 'slug' => 'product-category' ),
             'show_in_rest'      => true,
         ) );
+
+        // Seed core marketplace categories if they do not exist
+        $default_terms = array(
+            'Subscriptions'     => 'subscriptions',
+            'Software & Tools'  => 'software',
+            'Hosting & Domains' => 'hosting',
+            'Entertainment'     => 'entertainment',
+            'Design Resources'  => 'design',
+            'Business Tools'    => 'business',
+            'Templates'         => 'templates',
+            'Licenses'          => 'licenses',
+        );
+        foreach ( $default_terms as $term_name => $term_slug ) {
+            if ( ! term_exists( $term_slug, 'product_cat' ) ) {
+                wp_insert_term( $term_name, 'product_cat', array( 'slug' => $term_slug ) );
+            }
+        }
     }
 }
 add_action( 'init', 'digital_marketplace_register_cpt' );
@@ -477,5 +496,353 @@ function digital_marketplace_authenticate_check( $user, $username, $password ) {
     return $user;
 }
 add_filter( 'authenticate', 'digital_marketplace_authenticate_check', 20, 3 );
+
+/**
+ * =========================================================================
+ * AJAX LIVE INSTANT SEARCH & CATALOG FILTER HANDLERS
+ * =========================================================================
+ */
+
+/**
+ * AJAX Live Instant Search Handler
+ * Returns rich JSON payload of matched products for the instant dropdown
+ */
+function digital_marketplace_ajax_search() {
+    $term  = isset( $_REQUEST['term'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['term'] ) ) : '';
+    $limit = isset( $_REQUEST['limit'] ) ? absint( $_REQUEST['limit'] ) : 6;
+    if ( $limit <= 0 || $limit > 20 ) {
+        $limit = 6;
+    }
+
+    if ( empty( $term ) || mb_strlen( $term ) < 2 ) {
+        wp_send_json_success( array(
+            'count'    => 0,
+            'products' => array(),
+            'message'  => __( 'Type at least 2 characters to search...', 'digital-marketplace' ),
+        ) );
+    }
+
+    $args = array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        's'              => $term,
+        'posts_per_page' => $limit,
+    );
+
+    $query   = new WP_Query( $args );
+    $results = array();
+
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $id         = get_the_ID();
+            $price      = digital_marketplace_get_price( $id );
+            $orig_price = get_post_meta( $id, '_product_original_price', true );
+            $rating     = get_post_meta( $id, '_product_rating', true ) ?: '4.9';
+            $reviews    = get_post_meta( $id, '_product_review_count', true ) ?: '85';
+            $format     = get_post_meta( $id, '_product_file_format', true ) ?: 'Instant Access';
+
+            $terms    = get_the_terms( $id, 'product_cat' );
+            $category = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : __( 'Digital Product', 'digital-marketplace' );
+
+            $thumb_url = '';
+            if ( has_post_thumbnail( $id ) ) {
+                $thumb_url = get_the_post_thumbnail_url( $id, 'thumbnail' );
+            }
+
+            $title     = get_the_title();
+            $results[] = array(
+                'id'         => $id,
+                'title'      => $title,
+                'url'        => get_permalink( $id ),
+                'thumb'      => $thumb_url,
+                'initials'   => strtoupper( mb_substr( $title, 0, 1 ) ),
+                'category'   => $category,
+                'format'     => $format,
+                'price'      => '$' . number_format( (float) $price, 2 ),
+                'orig_price' => $orig_price ? '$' . number_format( (float) $orig_price, 2 ) : '',
+                'rating'     => $rating,
+                'reviews'    => $reviews,
+            );
+        }
+        wp_reset_postdata();
+    }
+
+    $view_all_url = add_query_arg( array(
+        's'         => $term,
+        'post_type' => 'product',
+    ), home_url( '/' ) );
+
+    wp_send_json_success( array(
+        'count'        => $query->found_posts,
+        'term'         => $term,
+        'view_all_url' => $view_all_url,
+        'products'     => $results,
+    ) );
+}
+add_action( 'wp_ajax_digital_marketplace_search', 'digital_marketplace_ajax_search' );
+add_action( 'wp_ajax_nopriv_digital_marketplace_search', 'digital_marketplace_ajax_search' );
+
+/**
+ * AJAX Catalog Filter & Sort Handler
+ * Dynamically re-renders the product grid and pagination without full page refresh
+ */
+function digital_marketplace_ajax_filter_catalog() {
+    $search   = isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';
+    $category = isset( $_REQUEST['category'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['category'] ) ) : '';
+    $sort     = isset( $_REQUEST['sort'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['sort'] ) ) : 'newest';
+    $paged    = isset( $_REQUEST['paged'] ) ? max( 1, absint( $_REQUEST['paged'] ) ) : 1;
+
+    $args = array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'posts_per_page' => 12,
+        'paged'          => $paged,
+    );
+
+    if ( ! empty( $search ) ) {
+        $args['s'] = $search;
+    }
+
+    if ( ! empty( $category ) && 'all' !== $category ) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'product_cat',
+                'field'    => 'slug',
+                'terms'    => $category,
+            ),
+        );
+    }
+
+    switch ( $sort ) {
+        case 'price_asc':
+            $args['meta_key'] = '_product_price';
+            $args['orderby']  = 'meta_value_num';
+            $args['order']    = 'ASC';
+            break;
+        case 'price_desc':
+            $args['meta_key'] = '_product_price';
+            $args['orderby']  = 'meta_value_num';
+            $args['order']    = 'DESC';
+            break;
+        case 'rating':
+            $args['meta_key'] = '_product_rating';
+            $args['orderby']  = 'meta_value_num';
+            $args['order']    = 'DESC';
+            break;
+        case 'popular':
+            $args['meta_key'] = '_product_review_count';
+            $args['orderby']  = 'meta_value_num';
+            $args['order']    = 'DESC';
+            break;
+        case 'newest':
+        default:
+            $args['orderby'] = 'date';
+            $args['order']   = 'DESC';
+            break;
+    }
+
+    $query = new WP_Query( $args );
+
+    ob_start();
+    if ( $query->have_posts() ) {
+        echo '<div class="products-grid premium-grid" id="catalog-products-grid">';
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $id      = get_the_ID();
+            $price   = digital_marketplace_get_price( $id );
+            $orig    = get_post_meta( $id, '_product_original_price', true );
+            $rating  = get_post_meta( $id, '_product_rating', true ) ?: '4.9';
+            $reviews = get_post_meta( $id, '_product_review_count', true ) ?: '85';
+            $terms   = get_the_terms( $id, 'product_cat' );
+            $cat     = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : 'Digital Product';
+            $format  = get_post_meta( $id, '_product_file_format', true ) ?: 'Instant access';
+            ?>
+            <article class="market-card">
+                <a class="market-card-image" href="<?php the_permalink(); ?>">
+                    <?php if ( has_post_thumbnail() ) : ?>
+                        <?php the_post_thumbnail( 'marketplace-card' ); ?>
+                    <?php else : ?>
+                        <div class="image-placeholder">
+                            <span><?php echo esc_html( strtoupper( substr( get_the_title(), 0, 1 ) ) ); ?></span>
+                        </div>
+                    <?php endif; ?>
+                    <span class="card-category"><?php echo esc_html( $cat ); ?></span>
+                    <button class="wishlist" type="button" aria-label="<?php esc_attr_e( 'Add to wishlist', 'digital-marketplace' ); ?>">♡</button>
+                </a>
+                <div class="market-card-body">
+                    <div class="card-meta">
+                        <span><?php echo esc_html( $format ); ?></span>
+                        <span>★ <?php echo esc_html( $rating ); ?> (<?php echo esc_html( $reviews ); ?>)</span>
+                    </div>
+                    <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                    <p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 12 ) ); ?></p>
+                    <div class="card-buy">
+                        <div>
+                            <strong>$<?php echo esc_html( number_format( (float) $price, 2 ) ); ?></strong>
+                            <?php if ( $orig ) : ?>
+                                <del>$<?php echo esc_html( number_format( (float) $orig, 2 ) ); ?></del>
+                            <?php endif; ?>
+                        </div>
+                        <a href="<?php the_permalink(); ?>"><?php esc_html_e( 'View product', 'digital-marketplace' ); ?></a>
+                    </div>
+                </div>
+            </article>
+            <?php
+        }
+        echo '</div>';
+
+        $total_pages = $query->max_num_pages;
+        if ( $total_pages > 1 ) {
+            echo '<div class="archive-pagination-wrap">';
+            echo paginate_links( array(
+                'base'      => add_query_arg( 'paged', '%#%' ),
+                'format'    => '',
+                'current'   => $paged,
+                'total'     => $total_pages,
+                'prev_text' => __( '← Previous', 'digital-marketplace' ),
+                'next_text' => __( 'Next →', 'digital-marketplace' ),
+            ) );
+            echo '</div>';
+        }
+    } else {
+        ?>
+        <div class="archive-empty-state">
+            <div class="empty-state-icon">⌕</div>
+            <h2 class="empty-state-title"><?php esc_html_e( 'No matching products found', 'digital-marketplace' ); ?></h2>
+            <p class="empty-state-desc"><?php esc_html_e( 'Try clearing your search query or choosing another category.', 'digital-marketplace' ); ?></p>
+            <button type="button" class="btn btn-primary" id="catalog-reset-filters-btn"><?php esc_html_e( 'Reset all filters', 'digital-marketplace' ); ?></button>
+        </div>
+        <?php
+    }
+    $rendered_html = ob_get_clean();
+    wp_reset_postdata();
+
+    // Determine category title if filtered
+    $term_title = __( 'Explore premium digital products', 'digital-marketplace' );
+    if ( ! empty( $category ) && 'all' !== $category ) {
+        $term_obj = get_term_by( 'slug', $category, 'product_cat' );
+        if ( $term_obj ) {
+            $term_title = $term_obj->name;
+        }
+    } elseif ( ! empty( $search ) ) {
+        $term_title = sprintf( __( 'Results for “%s”', 'digital-marketplace' ), $search );
+    }
+
+    wp_send_json_success( array(
+        'html'       => $rendered_html,
+        'total'      => $query->found_posts,
+        'count'      => $query->post_count,
+        'paged'      => $paged,
+        'max_pages'  => $query->max_num_pages,
+        'title'      => $term_title,
+        'category'   => $category,
+        'search'     => $search,
+        'sort'       => $sort,
+    ) );
+}
+add_action( 'wp_ajax_digital_marketplace_filter_catalog', 'digital_marketplace_ajax_filter_catalog' );
+add_action( 'wp_ajax_nopriv_digital_marketplace_filter_catalog', 'digital_marketplace_ajax_filter_catalog' );
+
+/**
+ * Render Standard Marketplace Product Card
+ */
+function digital_marketplace_render_card( $product_id = null, $badge = '', $extra_class = '' ) {
+    if ( ! $product_id ) {
+        $product_id = get_the_ID();
+    }
+    $price    = digital_marketplace_get_price( $product_id );
+    $orig     = get_post_meta( $product_id, '_product_original_price', true );
+    $rating   = get_post_meta( $product_id, '_product_rating', true ) ?: '4.9';
+    $reviews  = get_post_meta( $product_id, '_product_review_count', true ) ?: '85';
+    $terms    = get_the_terms( $product_id, 'product_cat' );
+    $cat      = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : 'Digital Asset';
+    $format   = get_post_meta( $product_id, '_product_file_format', true ) ?: 'Instant access';
+    $discount = '';
+    if ( $orig && floatval( $orig ) > floatval( $price ) ) {
+        $pct = round( ( ( floatval( $orig ) - floatval( $price ) ) / floatval( $orig ) ) * 100 );
+        $discount = '-' . $pct . '%';
+    }
+    ?>
+    <article class="market-card <?php echo esc_attr( $extra_class ); ?>" data-product-id="<?php echo esc_attr( $product_id ); ?>">
+        <a class="market-card-image" href="<?php echo esc_url( get_permalink( $product_id ) ); ?>">
+            <?php if ( has_post_thumbnail( $product_id ) ) : ?>
+                <?php echo get_the_post_thumbnail( $product_id, 'marketplace-card' ); ?>
+            <?php else : ?>
+                <div class="image-placeholder">
+                    <span><?php echo esc_html( strtoupper( substr( get_the_title( $product_id ), 0, 1 ) ) ); ?></span>
+                </div>
+            <?php endif; ?>
+            <span class="card-category"><?php echo esc_html( $cat ); ?></span>
+            <?php if ( ! empty( $badge ) ) : ?>
+                <span class="card-promo-badge"><?php echo esc_html( $badge ); ?></span>
+            <?php elseif ( ! empty( $discount ) ) : ?>
+                <span class="card-promo-badge deal-badge"><?php echo esc_html( $discount ); ?></span>
+            <?php endif; ?>
+            <button class="wishlist" type="button" aria-label="<?php esc_attr_e( 'Add to wishlist', 'digital-marketplace' ); ?>">♡</button>
+        </a>
+        <div class="market-card-body">
+            <div class="card-meta">
+                <span><?php echo esc_html( $format ); ?></span>
+                <span>★ <?php echo esc_html( $rating ); ?> (<?php echo esc_html( $reviews ); ?>)</span>
+            </div>
+            <h3>
+                <a href="<?php echo esc_url( get_permalink( $product_id ) ); ?>">
+                    <?php echo esc_html( get_the_title( $product_id ) ); ?>
+                </a>
+            </h3>
+            <p><?php echo esc_html( wp_trim_words( get_the_excerpt( $product_id ), 12 ) ); ?></p>
+            <div class="card-buy">
+                <div>
+                    <strong>$<?php echo esc_html( number_format( (float) $price, 2 ) ); ?></strong>
+                    <?php if ( $orig ) : ?>
+                        <del>$<?php echo esc_html( number_format( (float) $orig, 2 ) ); ?></del>
+                    <?php endif; ?>
+                </div>
+                <a href="<?php echo esc_url( get_permalink( $product_id ) ); ?>" class="btn-card-view"><?php esc_html_e( 'View →', 'digital-marketplace' ); ?></a>
+            </div>
+        </div>
+    </article>
+    <?php
+}
+
+/**
+ * AJAX Handler: Retrieve recently viewed products by an array of post IDs
+ */
+function digital_marketplace_ajax_get_recent_products() {
+    $ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+    $ids = array_filter( array_map( 'absint', $ids ) );
+
+    if ( empty( $ids ) ) {
+        wp_send_json_success( array( 'html' => '', 'count' => 0 ) );
+    }
+
+    $query = new WP_Query( array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'post__in'       => $ids,
+        'orderby'        => 'post__in',
+        'posts_per_page' => 8,
+    ) );
+
+    ob_start();
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            digital_marketplace_render_card( get_the_ID(), __( 'Viewed', 'digital-marketplace' ) );
+        }
+    }
+    $html = ob_get_clean();
+    wp_reset_postdata();
+
+    wp_send_json_success( array(
+        'html'  => $html,
+        'count' => $query->post_count,
+    ) );
+}
+add_action( 'wp_ajax_digital_marketplace_get_recent_products', 'digital_marketplace_ajax_get_recent_products' );
+add_action( 'wp_ajax_nopriv_digital_marketplace_get_recent_products', 'digital_marketplace_ajax_get_recent_products' );
+
+
 
 

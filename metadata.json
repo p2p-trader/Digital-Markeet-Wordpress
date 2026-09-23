@@ -1,6 +1,0 @@
-{
-  "name": "Digital Marketplace",
-  "description": "A digital marketplace where users can browse products, view details, manage cart, and purchase items.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

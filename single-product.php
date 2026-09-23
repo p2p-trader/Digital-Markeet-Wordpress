@@ -52,6 +52,19 @@ get_header(); ?>
             <span class="breadcrumb-current"><?php the_title(); ?></span>
         </nav>
 
+        <!-- Product Analytics Tracking Data for Recently Viewed -->
+        <div id="product-page-analytics" style="display:none;"
+            data-id="<?php echo esc_attr( $product_id ); ?>"
+            data-title="<?php echo esc_attr( get_the_title() ); ?>"
+            data-url="<?php echo esc_url( get_permalink() ); ?>"
+            data-price="<?php echo esc_attr( number_format( (float) $price, 2 ) ); ?>"
+            data-orig-price="<?php echo esc_attr( $original_price ? number_format( (float) $original_price, 2 ) : '' ); ?>"
+            data-category="<?php echo esc_attr( $cat_name ); ?>"
+            data-rating="<?php echo esc_attr( $rating ?: '4.9' ); ?>"
+            data-format="<?php echo esc_attr( $file_format ?: 'Instant access' ); ?>"
+            data-thumb="<?php echo esc_url( has_post_thumbnail() ? get_the_post_thumbnail_url( $product_id, 'marketplace-card' ) : '' ); ?>"
+        ></div>
+
         <!-- Product Presentation Layout -->
         <div class="product-single-layout">
             
