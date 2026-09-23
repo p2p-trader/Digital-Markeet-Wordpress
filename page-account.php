@@ -309,7 +309,7 @@ get_header(); ?>
                                         <td><span class="status-badge dmc-status-completed"><span class="status-dot">●</span> Completed</span></td>
                                         <td class="order-total-cell">$49.00</td>
                                         <td>
-                                            <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="alert('Download started: Apex-UI-Kit-v2.4.zip'); return false;">
+                                            <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="if(window.DMC&&window.DMC.showToast){window.DMC.showToast('Download started', 'Apex-UI-Kit-v2.4.zip package streaming...', 'success');} return false;">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -329,7 +329,7 @@ get_header(); ?>
                                         <td><span class="status-badge dmc-status-completed"><span class="status-dot">●</span> Completed</span></td>
                                         <td class="order-total-cell">$79.00</td>
                                         <td>
-                                            <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="alert('Download started: NextJS15-Starter-v1.8.zip'); return false;">
+                                            <a href="#" class="btn btn-primary btn-sm btn-download-token" onclick="if(window.DMC&&window.DMC.showToast){window.DMC.showToast('Download started', 'NextJS15-Starter-v1.8.zip package streaming...', 'success');} return false;">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -555,7 +555,7 @@ get_header(); ?>
                         </div>
 
                         <div class="form-actions-row">
-                            <button type="button" class="btn btn-primary btn-md" onclick="alert('Profile changes saved successfully.');">
+                            <button type="button" class="btn btn-primary btn-md" onclick="if(window.DMC&&window.DMC.showToast){window.DMC.showToast('Profile Saved', 'Your buyer profile preferences have been updated.', 'success');}">
                                 <?php esc_html_e( 'Save Profile Changes', 'digital-marketplace' ); ?>
                             </button>
                         </div>

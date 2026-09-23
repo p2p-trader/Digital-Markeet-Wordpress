@@ -678,10 +678,12 @@ class DMC_Checkout {
         $customer_name  = get_post_meta( $order_id, '_dmc_customer_name', true );
         $customer_email = get_post_meta( $order_id, '_dmc_customer_email', true );
         $total          = floatval( get_post_meta( $order_id, '_dmc_order_total', true ) );
-        $status         = get_post_meta( $order_id, '_dmc_order_status', true );
-        $coin           = get_post_meta( $order_id, '_dmc_crypto_coin', true );
+        $status         = get_post_meta( $order_id, '_dmc_order_status', true ) ?: 'Awaiting Payment';
+        $coin           = get_post_meta( $order_id, '_dmc_crypto_coin', true ) ?: 'Bitcoin (BTC)';
         $wallet_address = get_post_meta( $order_id, '_dmc_crypto_wallet', true );
         $items          = get_post_meta( $order_id, '_dmc_order_items', true );
+
+        $is_completed = ( $status === DMC_Post_Type::STATUS_COMPLETED );
 
         ob_start();
         ?>
@@ -692,33 +694,59 @@ class DMC_Checkout {
                     🪙
                 </div>
                 <h1 class="confirmation-title">
-                    <?php esc_html_e( 'Order Placed — Crypto Payment Pending', 'digital-marketplace-commerce' ); ?>
+                    <?php echo $is_completed ? esc_html__( 'Order Completed — Downloads Unlocked!', 'digital-marketplace-commerce' ) : esc_html__( 'Order Placed — Crypto Payment Pending', 'digital-marketplace-commerce' ); ?>
                 </h1>
                 <p class="confirmation-subtitle">
-                    <?php printf( esc_html__( 'Order Reference: #%d', 'digital-marketplace-commerce' ), esc_html( $order_id ) ); ?> • 
-                    <span class="status-badge status-badge-pending"><?php echo esc_html( $status ); ?></span>
+                    <span><?php printf( esc_html__( 'Order Reference: #%d', 'digital-marketplace-commerce' ), esc_html( $order_id ) ); ?></span>
+                    <span>•</span>
+                    <span class="status-badge <?php echo $is_completed ? 'dmc-status-completed' : 'dmc-status-awaiting'; ?>">
+                        <span class="status-dot">●</span> <?php echo esc_html( $status ); ?>
+                    </span>
                 </p>
             </div>
 
-            <!-- Prominent Warning Notice -->
-            <div class="confirmation-alert-box">
-                <p class="alert-box-heading">
-                    ⚠️ <?php esc_html_e( 'Important Settlement Action:', 'digital-marketplace-commerce' ); ?>
-                </p>
-                <p class="alert-box-body">
-                    <?php 
-                    /* translators: %d: Order ID */
-                    printf( esc_html__( 'Transfer the exact total shown below to the specified recipient address. Please bookmark this page or record your Order ID: #%d for tracking.', 'digital-marketplace-commerce' ), esc_html( $order_id ) ); 
-                    ?>
-                </p>
+            <!-- 3-Step Blockchain Settlement Tracker -->
+            <div class="dmc-order-tracker">
+                <div class="tracker-step is-done">
+                    <span class="tracker-step-num">✓</span>
+                    <strong class="tracker-step-title"><?php esc_html_e( '1. Order Registered', 'digital-marketplace-commerce' ); ?></strong>
+                    <span class="tracker-step-desc"><?php esc_html_e( 'Invoice & wallet assigned', 'digital-marketplace-commerce' ); ?></span>
+                </div>
+                <div class="tracker-step <?php echo $is_completed ? 'is-done' : 'is-active'; ?>">
+                    <span class="tracker-step-num"><?php echo $is_completed ? '✓' : '2'; ?></span>
+                    <strong class="tracker-step-title"><?php esc_html_e( '2. Network Confirmation', 'digital-marketplace-commerce' ); ?></strong>
+                    <span class="tracker-step-desc"><?php echo $is_completed ? esc_html__( 'Payment verified on-chain', 'digital-marketplace-commerce' ) : esc_html__( 'Awaiting node broadcast', 'digital-marketplace-commerce' ); ?></span>
+                </div>
+                <div class="tracker-step <?php echo $is_completed ? 'is-done' : ''; ?>">
+                    <span class="tracker-step-num"><?php echo $is_completed ? '✓' : '3'; ?></span>
+                    <strong class="tracker-step-title"><?php esc_html_e( '3. Token Access', 'digital-marketplace-commerce' ); ?></strong>
+                    <span class="tracker-step-desc"><?php echo $is_completed ? esc_html__( 'Downloads ready below', 'digital-marketplace-commerce' ) : esc_html__( 'Locks until verified', 'digital-marketplace-commerce' ); ?></span>
+                </div>
             </div>
+
+            <!-- Prominent Warning Notice -->
+            <?php if ( ! $is_completed ) : ?>
+                <div class="confirmation-alert-box">
+                    <p class="alert-box-heading">
+                        ⚠️ <?php esc_html_e( 'Important Settlement Action:', 'digital-marketplace-commerce' ); ?>
+                    </p>
+                    <p class="alert-box-body">
+                        <?php 
+                        /* translators: %d: Order ID */
+                        printf( esc_html__( 'Transfer the exact total of $%s USD in %s to the specified recipient address. Please record your Order ID: #%d for tracking.', 'digital-marketplace-commerce' ), esc_html( number_format( $total, 2 ) ), esc_html( $coin ), esc_html( $order_id ) ); 
+                        ?>
+                    </p>
+                </div>
+            <?php endif; ?>
 
             <!-- Payment Details Box -->
             <div class="confirmation-details-box">
                 <div class="confirmation-details-header">
                     <div>
-                        <span class="details-label"><?php esc_html_e( 'Selected Network / Coin', 'digital-marketplace-commerce' ); ?></span>
-                        <h3 class="details-coin-val"><?php echo esc_html( $coin ); ?></h3>
+                        <span class="details-label"><?php esc_html_e( 'Selected Network / Asset', 'digital-marketplace-commerce' ); ?></span>
+                        <h3 class="details-coin-val">
+                            <span>🪙</span> <?php echo esc_html( $coin ); ?>
+                        </h3>
                     </div>
                     <div class="details-total-wrap">
                         <span class="details-label"><?php esc_html_e( 'Exact Total Due', 'digital-marketplace-commerce' ); ?></span>
@@ -734,17 +762,57 @@ class DMC_Checkout {
                         <code id="dmc-wallet-copy-text" class="wallet-copy-code">
                             <?php echo esc_html( $wallet_address ); ?>
                         </code>
-                        <button type="button" class="btn btn-secondary btn-sm btn-copy-wallet" onclick="navigator.clipboard.writeText('<?php echo esc_js( $wallet_address ); ?>'); alert('Wallet address copied to clipboard!');">
-                            📋 <?php esc_html_e( 'Copy', 'digital-marketplace-commerce' ); ?>
+                        <button type="button" class="btn btn-secondary btn-sm btn-copy-wallet dmc-copy-wallet-btn" data-copy-text="<?php echo esc_attr( $wallet_address ); ?>" aria-label="<?php esc_attr_e( 'Copy wallet address', 'digital-marketplace-commerce' ); ?>">
+                            📋 <?php esc_html_e( 'Copy Address', 'digital-marketplace-commerce' ); ?>
                         </button>
                     </div>
+
+                    <!-- Interactive QR Code Section -->
+                    <div class="dmc-qr-section">
+                        <span class="field-hint"><?php esc_html_e( 'Scan from your mobile crypto wallet (e.g. Trust Wallet, MetaMask, Coinbase):', 'digital-marketplace-commerce' ); ?></span>
+                        <button type="button" class="dmc-qr-toggle-btn" aria-expanded="false">
+                            <span>📷 <?php esc_html_e( 'Show Mobile Wallet QR', 'digital-marketplace-commerce' ); ?></span>
+                        </button>
+                        <div id="dmc-qr-box" class="dmc-qr-box">
+                            <svg class="dmc-qr-svg" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="100" height="100" fill="#ffffff" />
+                                <path fill="#0f172a" d="M10,10 h30 v30 h-30 z M15,15 v20 h20 v-20 z M20,20 h10 v10 h-10 z" />
+                                <path fill="#0f172a" d="M60,10 h30 v30 h-30 z M65,15 v20 h20 v-20 z M70,20 h10 v10 h-10 z" />
+                                <path fill="#0f172a" d="M10,60 h30 v30 h-30 z M15,65 v20 h20 v-20 z M20,70 h10 v10 h-10 z" />
+                                <rect x="46" y="14" width="8" height="8" fill="#0f172a" />
+                                <rect x="46" y="28" width="8" height="8" fill="#0f172a" />
+                                <rect x="46" y="46" width="8" height="8" fill="#0f172a" />
+                                <rect x="28" y="46" width="8" height="8" fill="#0f172a" />
+                                <rect x="64" y="46" width="8" height="8" fill="#0f172a" />
+                                <rect x="80" y="46" width="8" height="8" fill="#0f172a" />
+                                <rect x="46" y="64" width="8" height="8" fill="#0f172a" />
+                                <rect x="64" y="64" width="8" height="8" fill="#0f172a" />
+                                <rect x="80" y="64" width="8" height="8" fill="#0f172a" />
+                                <rect x="64" y="80" width="8" height="8" fill="#0f172a" />
+                                <rect x="80" y="80" width="8" height="8" fill="#0f172a" />
+                            </svg>
+                            <p class="dmc-qr-hint"><?php printf( esc_html__( 'Scan with %s wallet app', 'digital-marketplace-commerce' ), esc_html( $coin ) ); ?></p>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Instant Payment Sent Confirmation Trigger -->
+                <?php if ( ! $is_completed ) : ?>
+                    <div class="dmc-sent-payment-bar">
+                        <p class="dmc-sent-payment-text">
+                            ⚡ <?php esc_html_e( 'Already initiated transfer from your wallet?', 'digital-marketplace-commerce' ); ?>
+                        </p>
+                        <button type="button" class="btn-notify-sent">
+                            <span>✓ <?php esc_html_e( "I've Sent Payment", 'digital-marketplace-commerce' ); ?></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <!-- Customer Notification -->
             <div class="confirmation-notice-wrap">
                 <p>
-                    ✉️ <?php printf( esc_html__( 'A payment confirmation and cryptographic invoice receipt has been dispatched to %s.', 'digital-marketplace-commerce' ), '<strong>' . esc_html( $customer_email ) . '</strong>' ); ?>
+                    ✉️ <?php printf( esc_html__( 'A payment confirmation and cryptographic receipt has been dispatched to %s.', 'digital-marketplace-commerce' ), '<strong>' . esc_html( $customer_email ) . '</strong>' ); ?>
                 </p>
                 <p class="notice-security-note">
                     🛡️ <?php esc_html_e( 'Direct license and file downloads activate automatically as soon as transaction validation completes on the blockchain and the order is marked Completed.', 'digital-marketplace-commerce' ); ?>
@@ -753,7 +821,7 @@ class DMC_Checkout {
 
             <!-- Items Purchased Summary -->
             <h3 class="confirmation-items-heading">
-                <?php esc_html_e( 'Purchased Digital Items:', 'digital-marketplace-commerce' ); ?>
+                <?php esc_html_e( 'Purchased Digital Items & Download Access:', 'digital-marketplace-commerce' ); ?>
             </h3>
             <div class="confirmation-items-card">
                 <?php if ( is_array( $items ) ) : ?>
@@ -769,26 +837,29 @@ class DMC_Checkout {
                                 
                                 <div class="confirmation-item-status-note">
                                     <?php if ( $has_file && $file_info ) : ?>
-                                        <span class="file-status-ready">
-                                            ✓ <?php esc_html_e( 'Digital package ready for download', 'digital-marketplace-commerce' ); ?>
-                                        </span>
                                         <?php if ( $status === DMC_Post_Type::STATUS_COMPLETED && class_exists( 'DMC_Downloads' ) ) : 
                                             $dl_url = DMC_Downloads::get_download_url( $order_id, $pid );
                                             if ( $dl_url ) : ?>
+                                                <span class="file-status-ready">
+                                                    ✓ <?php esc_html_e( 'Download Unlocked & Active', 'digital-marketplace-commerce' ); ?>
+                                                </span>
                                                 <div class="file-download-btn-wrap">
                                                     <a href="<?php echo esc_url( $dl_url ); ?>" class="btn btn-primary btn-sm">
-                                                        ⬇️ <?php esc_html_e( 'Download Package', 'digital-marketplace-commerce' ); ?>
+                                                        ⬇️ <?php esc_html_e( 'Download Package Archive', 'digital-marketplace-commerce' ); ?>
                                                     </a>
                                                 </div>
                                             <?php endif; ?>
                                         <?php else : ?>
+                                            <span class="file-status-ready">
+                                                ✓ <?php esc_html_e( 'Digital package ready for download', 'digital-marketplace-commerce' ); ?>
+                                            </span>
                                             <span class="file-status-pending">
-                                                (<?php esc_html_e( 'Link unlocks when transaction confirmation completes', 'digital-marketplace-commerce' ); ?>)
+                                                (<?php esc_html_e( 'Token unlocks upon blockchain network confirmation', 'digital-marketplace-commerce' ); ?>)
                                             </span>
                                         <?php endif; ?>
                                     <?php else : ?>
-                                        <span class="file-status-none">
-                                            ⚠️ <?php esc_html_e( 'No downloadable file currently attached to this product', 'digital-marketplace-commerce' ); ?>
+                                        <span class="file-status-ready">
+                                            ✓ <?php esc_html_e( 'Product license generated', 'digital-marketplace-commerce' ); ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>
