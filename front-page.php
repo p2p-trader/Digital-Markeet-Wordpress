@@ -170,7 +170,7 @@ function dmp_render_category_shelf( $slug, $title, $eyebrow, $desc, $curated_fal
                     <div class="dashboard-welcome">
                         <div>
                             <small>Browsing Preferences</small>
-                            <strong>Tailored1 Marketplace Feed</strong>
+                            <strong>Tailored Marketplace Feed</strong>
                         </div>
                         <span class="curated-status-pill">Active</span>
                     </div>
